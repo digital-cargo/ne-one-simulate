@@ -251,34 +251,38 @@
 									"\r",
 									"// Extract 'Location' header and store it in an environment variable\r",
 									"let locationHeader = pm.response.headers.get(\"Location\");\r",
-									"if (locationHeader) {\r",
-									"    pm.collectionVariables.set(\"actionRequest\", locationHeader);\r",
-									"    \r",
-									"    // Try both forward slash and backslash\r",
-									"    let partsForwardSlash = locationHeader.split('/');\r",
-									"    \r",
-									"    console.log(\"Split by forward slash:\", partsForwardSlash);\r",
-									"    \r",
-									"    // Get the last non-empty element\r",
-									"    let actionID = '';\r",
-									"    \r",
-									"    // Try with forward slash first (more common in URLs)\r",
-									"    if (partsForwardSlash.length > 0) {\r",
-									"        // Filter out empty strings and get the last element\r",
-									"        let filtered = partsForwardSlash.filter(part => part.trim() !== '');\r",
-									"        if (filtered.length > 0) {\r",
-									"            actionID = filtered[filtered.length - 1];\r",
-									"        }\r",
+									"pm.collectionVariables.set(\"actionRequest\", locationHeader);\r",
+									"\r",
+									"// Try both forward slash and backslash\r",
+									"let partsForwardSlash = locationHeader.split('/');\r",
+									"\r",
+									"console.log(\"Split by forward slash:\", partsForwardSlash);\r",
+									"\r",
+									"// Get the last non-empty element\r",
+									"let actionID = '';\r",
+									"\r",
+									"// Try with forward slash first (more common in URLs)\r",
+									"if (partsForwardSlash.length > 0) {\r",
+									"    // Filter out empty strings and get the last element\r",
+									"    let filtered = partsForwardSlash.filter(part => part.trim() !== '');\r",
+									"    if (filtered.length > 0) {\r",
+									"        actionID = filtered[filtered.length - 1];\r",
 									"    }\r",
-									"    \r",
-									"    console.log(\"Extracted actionID:\", actionID);\r",
-									"    \r",
-									"    // Set the actionID variable\r",
-									"    pm.collectionVariables.set(\"actionID\", actionID);\r",
+									"}\r",
+									"\r",
+									"// Set the actionID variable\r",
+									"pm.collectionVariables.set(\"actionID\", actionID);\r",
 									"}"
 								],
 								"type": "text/javascript",
 								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -320,65 +324,6 @@
 							"path": [
 								"logistics-objects",
 								"waybill-{{mawb-prefix}}-{{mawb-number}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Change request",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Validate HTTP Status Code\r",
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"// Validate response contains the 'hasRequestStatus' field with 'REQUEST_ACCEPTED'\r",
-									"pm.test(\"Response has 'REQUEST_ACCEPTED' status\", function () {\r",
-									"    const jsonData = pm.response.json();\r",
-									"    const requestStatus = jsonData[\"https://onerecord.iata.org/ns/api#hasRequestStatus\"];\r",
-									"\r",
-									"    pm.expect(requestStatus).to.have.property(\"@id\", \"https://onerecord.iata.org/ns/api#REQUEST_ACCEPTED\");\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkX21ZLWZqdnFXRXZ0MWtmakwzNmE5UkNQSGg4bkUxTmRWMzkzNDJ2OUQ4In0.eyJleHAiOjE3NDA0NDQzMzAsImlhdCI6MTc0MDQwODMzMSwianRpIjoiMGYzOTgwOTktOWUzYi00NWI5LWFlMTItMjJjMGE1MWNiMWM0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4OTg5L3JlYWxtcy9uZW9uZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwYWU4OThmMy1kMjQ4LTRlYWMtODY4MS1iMDM4MWM4MmQ2YzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZW9uZS1jbGllbnQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1uZW9uZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiY2xpZW50SG9zdCI6IjE3Mi4xOC4wLjEiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImxvZ2lzdGljc19hZ2VudF91cmkiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvbG9naXN0aWNzLW9iamVjdHMvX2RhdGEtaG9sZGVyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LW5lb25lLWNsaWVudCIsImNsaWVudEFkZHJlc3MiOiIxNzIuMTguMC4xIiwiY2xpZW50X2lkIjoibmVvbmUtY2xpZW50In0.iOTrECoqUiB6_iwNdtvFP45UXyZfMjBbtbwcuf_ZOsbKHjMywgex0ZNR-NwClN3BCVsrmkCIr06j1XM0a1lCXO4ARYvVyUpU3RMjx2BXlCbNibT7JraD1ckTpqJyrf8PzZoQLjC7tzbWM1Oeydq_-1tmVKXBCuXOp6-E5YW-DhxjSsKDqdGt7-vvMvP3L9VK_FMRCb07ya2-WUHHLPjQWA66lcIPSLfG7rWPBjInRcQy9sE6oFdrlnvrqr6TGxvvyNqx_2xe6kWzZS8jcTatIPl46dDaAtSDuAUMUYfHq1aki2JAHgvAstWsfAPvpqDCebjgm7BWT0xtOQ9TcYYHBA",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/ld+json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:8080/action-requests/7a8e9af1-9f37-4f3d-980d-d00a5127c5a5",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"action-requests",
-								"7a8e9af1-9f37-4f3d-980d-d00a5127c5a5"
 							]
 						}
 					},
@@ -468,6 +413,65 @@
 									"key": "actionRequestId",
 									"value": "{{actionID}}"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Change request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate HTTP Status Code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validate response contains the 'hasRequestStatus' field with 'REQUEST_ACCEPTED'\r",
+									"pm.test(\"Response has 'REQUEST_ACCEPTED' status\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    const requestStatus = jsonData[\"https://onerecord.iata.org/ns/api#hasRequestStatus\"];\r",
+									"\r",
+									"    pm.expect(requestStatus).to.have.property(\"@id\", \"https://onerecord.iata.org/ns/api#REQUEST_ACCEPTED\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkX21ZLWZqdnFXRXZ0MWtmakwzNmE5UkNQSGg4bkUxTmRWMzkzNDJ2OUQ4In0.eyJleHAiOjE3NDA0NDQzMzAsImlhdCI6MTc0MDQwODMzMSwianRpIjoiMGYzOTgwOTktOWUzYi00NWI5LWFlMTItMjJjMGE1MWNiMWM0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4OTg5L3JlYWxtcy9uZW9uZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwYWU4OThmMy1kMjQ4LTRlYWMtODY4MS1iMDM4MWM4MmQ2YzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZW9uZS1jbGllbnQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1uZW9uZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiY2xpZW50SG9zdCI6IjE3Mi4xOC4wLjEiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImxvZ2lzdGljc19hZ2VudF91cmkiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvbG9naXN0aWNzLW9iamVjdHMvX2RhdGEtaG9sZGVyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LW5lb25lLWNsaWVudCIsImNsaWVudEFkZHJlc3MiOiIxNzIuMTguMC4xIiwiY2xpZW50X2lkIjoibmVvbmUtY2xpZW50In0.iOTrECoqUiB6_iwNdtvFP45UXyZfMjBbtbwcuf_ZOsbKHjMywgex0ZNR-NwClN3BCVsrmkCIr06j1XM0a1lCXO4ARYvVyUpU3RMjx2BXlCbNibT7JraD1ckTpqJyrf8PzZoQLjC7tzbWM1Oeydq_-1tmVKXBCuXOp6-E5YW-DhxjSsKDqdGt7-vvMvP3L9VK_FMRCb07ya2-WUHHLPjQWA66lcIPSLfG7rWPBjInRcQy9sE6oFdrlnvrqr6TGxvvyNqx_2xe6kWzZS8jcTatIPl46dDaAtSDuAUMUYfHq1aki2JAHgvAstWsfAPvpqDCebjgm7BWT0xtOQ9TcYYHBA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/action-requests/7a8e9af1-9f37-4f3d-980d-d00a5127c5a5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"action-requests",
+								"7a8e9af1-9f37-4f3d-980d-d00a5127c5a5"
 							]
 						}
 					},
