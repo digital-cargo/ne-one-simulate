@@ -6,7 +6,6 @@ import { type DialogProps } from "@radix-ui/react-dialog"
 import { Circle, File, Laptop, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { docsConfig } from "@/config/docs"
 import { cn } from "@/lib/utils"
 import { Button } from "@/registry/new-york/ui/button"
 import {
@@ -70,40 +69,7 @@ export function CommandMenu({ ...props }: DialogProps) {
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Links">
-            {docsConfig.mainNav
-              .filter((navitem) => !navitem.external)
-              .map((navItem) => (
-                <CommandItem
-                  key={navItem.href}
-                  value={navItem.title}
-                  onSelect={() => {
-                    runCommand(() => router.push(navItem.href as string))
-                  }}
-                >
-                  <File />
-                  {navItem.title}
-                </CommandItem>
-              ))}
-          </CommandGroup>
-          {docsConfig.sidebarNav.map((group) => (
-            <CommandGroup key={group.title} heading={group.title}>
-              {group.items.map((navItem) => (
-                <CommandItem
-                  key={navItem.href}
-                  value={navItem.title}
-                  onSelect={() => {
-                    runCommand(() => router.push(navItem.href as string))
-                  }}
-                >
-                  <div className="mr-2 flex h-4 w-4 items-center justify-center">
-                    <Circle className="h-3 w-3" />
-                  </div>
-                  {navItem.title}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          ))}
+         
           <CommandSeparator />
           <CommandGroup heading="Theme">
             <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>

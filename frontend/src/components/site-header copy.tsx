@@ -4,7 +4,6 @@ import { siteConfig } from "@/config/site"
 import { CommandMenu } from "@/components/command-menu"
 import { Icons } from "@/components/icons"
 import { MainNav } from "@/components/main-nav"
-import { MobileNav } from "@/components/mobile-nav"
 import { ModeSwitcher } from "@/components/mode-switcher"
 import { Button } from "@/registry/new-york/ui/button"
 
@@ -14,7 +13,7 @@ export function SiteHeader() {
       <div className="container-wrapper">
         <div className="container flex h-14 items-center">
           <MainNav />
-          <MobileNav />
+          
           <div className="flex flex-1 items-center justify-between gap-2 md:justify-end">
             <div className="w-full flex-1 md:w-auto md:flex-none">
               <CommandMenu />

@@ -3,7 +3,6 @@ import Link from "next/link"
 import { CommandMenu } from "@/components/command-menu"
 import { Icons } from "@/components/icons"
 import { MainNav } from "@/components/main-nav"
-import { MobileNav } from "@/components/mobile-nav"
 import { ModeSwitcher } from "@/components/mode-switcher"
 import { Button } from "@/components/ui/button"
 
@@ -13,11 +12,10 @@ export function SiteHeader() {
       <div className="container-wrapper">
         <div className="container flex h-14 items-center">
           <MainNav />
-          <MobileNav />
           <div className="flex flex-1 items-center justify-between gap-2 md:justify-end">
-            <div className="w-full flex-1 md:w-auto md:flex-none">
+            {/* <div className="w-full flex-1 md:w-auto md:flex-none">
               <CommandMenu />
-            </div>
+            </div> */}
             <nav className="flex items-center gap-0.5">
               <Button
                 asChild

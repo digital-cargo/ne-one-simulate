@@ -2,22 +2,13 @@ import { siteConfig } from "@/config/site"
 
 export function SiteFooter() {
   return (
-    <footer className="border-grid border-t py-6 md:py-0">
-      <div className="container-wrapper">
-        <div className="container py-4">
-          <div className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
-            Built by{" "}
+    <footer className="border-t py-6 md:py-0">
+      <div className="container mx-auto text-center">
+        <div className="py-4">
+          <div className="text-balance text-center text-sm leading-loose text-muted-foreground">
+            Made with ❤ for DigitalCargo. The source code is available on{" "}
             <a
-              href={siteConfig.links.twitter}
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium underline underline-offset-4"
-            >
-              shadcn
-            </a>
-            . The source code is available on{" "}
-            <a
-              href={siteConfig.links.github}
+              href={"https://github.com/digital-cargo/ne-one-simulate"}
               target="_blank"
               rel="noreferrer"
               className="font-medium underline underline-offset-4"
