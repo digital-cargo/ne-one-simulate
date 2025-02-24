@@ -1,0 +1,248 @@
+{
+	"info": {
+		"_postman_id": "0af2ae47-7058-47ff-b4ea-d34ecdc02392",
+		"name": "1R-ShipmentRecord",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28113023"
+	},
+	"item": [
+		{
+			"name": "Update Route in ShipmentRecord",
+			"item": [
+				{
+					"name": "Create Waybill",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Define a function to generate a random 8-digit number",
+									"function generateRandomNumber() {",
+									"    return Math.floor(10000000 + Math.random() * 90000000).toString();",
+									"}",
+									"",
+									"// Set random MAWB number",
+									"pm.collectionVariables.set(\"mawb-prefix\", \"020\");",
+									"pm.collectionVariables.set(\"mawb-number\", generateRandomNumber());",
+									"",
+									"// Get token using Client Credentials grant type",
+									"pm.sendRequest({",
+									"    url: \"http://localhost:8989\" + \"/realms/neone/protocol/openid-connect/token\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Accept\": \"application/json\",",
+									"        \"Content-Type\": \"application/x-www-form-urlencoded\"",
+									"    },",
+									"    body: {",
+									"        mode: \"urlencoded\",",
+									"        urlencoded: [",
+									"            { key: \"grant_type\", value: \"client_credentials\" },",
+									"            { key: \"client_id\", value: \"neone-client\" },",
+									"            { key: \"client_secret\", value: \"lx7ThS5aYggdsMm42BP3wMrVqKm9WpNY\" }",
+									"        ]",
+									"    }",
+									"}, (err, res) => {",
+									"    if (err) {",
+									"        console.log(\"Token request failed:\", err);",
+									"    } else {",
+									"        // Set the access token",
+									"        pm.collectionVariables.set(\"BEARERTOKEN\", res.json().access_token);",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate HTTP Status Code",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Validate response contains the 'Location' header",
+									"pm.test(\"Response has 'Location' header\", function () {",
+									"    pm.response.to.have.header(\"Location\");",
+									"});",
+									"",
+									"// Extract 'Location' header and store it in an environment variable",
+									"let locationHeader = pm.response.headers.get(\"Location\");",
+									"",
+									"if (locationHeader) {",
+									"    pm.collectionVariables.set(\"shipmentRecord\", locationHeader);",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"@context\": {\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\"\n    },\n    \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\",\n    \"@type\": \"cargo:Waybill\",\n    \"cargo:waybillType\": {\n        \"@id\": \"https://onerecord.iata.org/ns/cargo#MASTER\"\n    },\n    \"cargo:waybillPrefix\": \"{{mawb-prefix}}\",\n    \"cargo:waybillNumber\": \"{{mawb-number}}\"    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/logistics-objects",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"logistics-objects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Waybill",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate HTTP Status Code",
+									"pm.test(\"Waybill exists\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"logistics-objects",
+								"waybill-{{mawb-prefix}}-{{mawb-number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "tokenName",
+				"value": "ne-one-simulate-token",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "mawb-prefix",
+			"value": ""
+		},
+		{
+			"key": "mawb-number",
+			"value": ""
+		},
+		{
+			"key": "BEARERTOKEN",
+			"value": ""
+		},
+		{
+			"key": "shipmentRecord",
+			"value": ""
+		}
+	]
+}
