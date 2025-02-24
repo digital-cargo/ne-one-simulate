@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
-import { Timer, CheckCircle2, XCircle } from "lucide-react"
+import { FlaskConical, CheckCircle2, XCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,9 +23,8 @@ const testResults = {
     "ULD Management Provider": { total: 49, passed: 45, failed: 4 },
   },
   failedTests: [
-    { test_step: "Update Non-Existing ShipmentRecord", test_case: "ShipmentRecord", duration: "2.3s", error: "ShipmentRecord does not exist" },
-    { test_step: "Update Weight in Shipment", test_case: "ShipmentRecord", duration: "13.3s", error: "ShipmentRecord does not exist" },
-    { test_step: "Update Weight in Shipment", test_case: "ShipmentRecord", duration: "9.3s", error: "Something else" },
+    { test_step: "Request verification of goods description", test_case: "TEST-2", duration: "2.3s", error: "VerificationRequest not implemented" },
+    { test_step: "Check VerificationRequest", test_case: "TEST-2", duration: "13.3s", error: "VerificationRequest does not exist" },    
   ],
 }
 
@@ -55,8 +54,8 @@ export default function TestReport() {
   }))
 
   const COLORS = {
-    chart: ["#4ade80", "#ff6b6b"],
-    category: ["#fcba03", "#fc03c6", "#078f91"],
+    chart: ["#008274", "#EC0016"],
+    category: ["#008274", "#EC0016", "#ec6802"],
   }
 
   return (
@@ -75,7 +74,7 @@ export default function TestReport() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Tests</CardTitle>
-            <Timer className="h-4 w-4 text-muted-foreground" />
+            <FlaskConical className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{testResults.summary.total}</div>
@@ -176,11 +175,11 @@ export default function TestReport() {
           <CardDescription>Detailed information about failed test cases</CardDescription>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[300px] rounded-md border">
+          <ScrollArea className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                <TableHead>Test case</TableHead>
+                <TableHead>Test</TableHead>
                 <TableHead>Step</TableHead>                  
                   <TableHead>Duration</TableHead>
                   <TableHead>Error Message</TableHead>
@@ -203,4 +202,3 @@ export default function TestReport() {
     </div>
   )
 }
-

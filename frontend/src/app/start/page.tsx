@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/registry/new-york-v4/ui/tabs"
+import { LoadingOverlay } from "@/components/loading-overlay"
 
 interface UploadedFile {
   name: string
@@ -18,11 +19,16 @@ interface UploadedFile {
 
 export default function StartPage() {
   const router = useRouter()
+  const [files, setFiles] = useState<UploadedFile[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [dragActive, setDragActive] = useState(false)
   const [url, setUrl] = useState("")
 
   useEffect(() => {
+    const storedFiles = localStorage.getItem("uploadedFiles")
+    if (storedFiles) {
+      setFiles(JSON.parse(storedFiles))
+    }
     const collection = localStorage.getItem('postmanCollection')
     if (collection) {
       router.push('/summary')
@@ -58,14 +64,21 @@ export default function StartPage() {
   }
 
   const handleFile = (file: File) => {
+    setIsLoading(true)
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string
         JSON.parse(content) // Validate JSON
-        localStorage.setItem('postmanCollection', content)
-        router.push('/summary')
+        
+        setTimeout(() => {
+          addNewFile(file.name, content, "file")
+          localStorage.setItem('postmanCollection', content)
+          setIsLoading(false)
+          router.push('/summary')
+        }, 3000)
       } catch (error) {
+        setIsLoading(false)
         alert("Invalid JSON file")
       }
     }
@@ -76,23 +89,45 @@ export default function StartPage() {
     e.preventDefault()
     if (!url) return
 
+    setIsLoading(true)
     try {
       const response = await fetch(url)
       const content = await response.text()
       JSON.parse(content) // Validate JSON
-      localStorage.setItem('postmanCollection', content)
-      router.push('/summary')
+
+      setTimeout(() => {
+        const fileName = url.split("/").pop() || "fetched-json"
+        addNewFile(fileName, content, "url")
+        localStorage.setItem('postmanCollection', content)
+        setUrl("")
+        setIsLoading(false)
+        router.push('/summary')
+      }, 3000)
     } catch (error) {
+      setIsLoading(false)
       alert("Failed to fetch or parse JSON from the provided URL")
     }
   }
 
+  const addNewFile = (name: string, content: string, source: "file" | "url") => {
+    const newFile: UploadedFile = {
+      name,
+      content,
+      uploadDate: new Date().toISOString(),
+      source,
+    }
+    const updatedFiles = [...files, newFile]
+    setFiles(updatedFiles)
+    localStorage.setItem("uploadedFiles", JSON.stringify(updatedFiles))
+  }
+
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+    return <LoadingOverlay />
   }
 
   return (
     <div className="container mx-auto p-4">
+      {isLoading && <LoadingOverlay />}
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Welcome to NE-ONE Simulate</CardTitle>
@@ -143,6 +178,27 @@ export default function StartPage() {
               </form>
             </TabsContent>
           </Tabs>
+          {files.length > 0 && (
+            <>
+              <h2 className="text-2xl font-semibold mb-4">Previously Uploaded Files</h2>
+              <div className="grid gap-4">
+                {files.map((file, index) => (
+                  <Card key={index}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        {file.source === "file" ? <File className="mr-2" /> : <Link className="mr-2" />}
+                        {file.name}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-500">Uploaded on: {new Date(file.uploadDate).toLocaleString()}</p>
+                      <p className="text-sm text-gray-500">Source: {file.source === "file" ? "File Upload" : "URL Fetch"}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -39,18 +39,19 @@ export default function TestPage({ params }: TestPageProps) {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+
       <div className="flex-col space-y-6 p-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Change weight of Piece</h1>
             <p className="text-muted-foreground">
-              Test details
+              ID: TEST-1
             </p>
           </div>
         </div>
 
-        <div className="">
+        <div className="grid gap-4 mt-4">
           <Card>
             <CardHeader>
               <CardTitle>Overview</CardTitle>
@@ -59,7 +60,7 @@ export default function TestPage({ params }: TestPageProps) {
               <SwimlaneDiagram />
             </CardContent>
           </Card>
-          <br />
+
           <Card>
             <CardHeader>
               <CardTitle>Test Results</CardTitle>
@@ -71,5 +72,7 @@ export default function TestPage({ params }: TestPageProps) {
         </div>
       </div>
     </div>
+
+
   )
 }

@@ -7,6 +7,7 @@ import { z } from "zod"
 import { columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
 import { taskSchema } from "./data/schema"
+import { Card, CardContent, CardHeader, CardTitle } from "@/registry/new-york/ui/card"
 
 export const metadata: Metadata = {
   title: "Test scenarios",
@@ -15,13 +16,13 @@ export const metadata: Metadata = {
 
 // Simulate a database read for tasks.
 async function getTasks() {
-  
+
   const data = await fs.readFile(
     path.join(process.cwd(), "/src/app/tests/data/tasks.json")
   )
-  
 
-  const tasks = JSON.parse(data.toString())  
+
+  const tasks = JSON.parse(data.toString())
 
   return z.array(taskSchema).parse(tasks)
 }
@@ -30,34 +31,31 @@ export default async function TaskPage() {
   const tasks = await getTasks()
 
   return (
-    <>
-      <div className="md:hidden">
-        <Image
-          src="/examples/tasks-light.png"
-          width={1280}
-          height={998}
-          alt="Playground"
-          className="block dark:hidden"
-        />
-        <Image
-          src="/examples/tasks-dark.png"
-          width={1280}
-          height={998}
-          alt="Playground"
-          className="hidden dark:block"
-        />
-      </div>
-      <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        <div className="flex items-center justify-between space-y-2">
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+
+      <div className="flex-col space-y-6 p-8">
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Test scenarios</h2>
+            <h1 className="text-3xl font-bold tracking-tight">Test scenarios</h1>
             <p className="text-muted-foreground">
-              Here&apos;s a list the test scenarios in your Postman collection.
+              This is a list of the test scenarios defined in the uploaded Postman collection.
             </p>
-          </div>          
+          </div>
+
         </div>
-        <DataTable data={tasks} columns={columns} />
+
+        <div className="grid gap-4 mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle></CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable data={tasks} columns={columns} />
+            </CardContent>
+          </Card>
+        </div>
+
       </div>
-    </>
+    </div>
   )
 }

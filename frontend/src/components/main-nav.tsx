@@ -14,7 +14,8 @@ export function MainNav() {
       <Link href="/" className="mr-4 flex items-center gap-2 lg:mr-6 pl-12">      
         {/* <Icons.logo className="h-6 w-6" /> */}
         <span className="hidden font-bold lg:inline-block">
-          ne:one simulate
+          <span style={{ color: "#009A49" }}>ne</span>:
+          <span style={{ color: "#FF7900" }}>one</span> simulate
         </span>
       </Link>
       <nav className="flex items-center gap-4 text-sm xl:gap-6">

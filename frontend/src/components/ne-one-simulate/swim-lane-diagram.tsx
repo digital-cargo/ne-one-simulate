@@ -9,7 +9,7 @@ export function SwimlaneDiagram() {
   };
 
   return (
-    <div style={{ height: '30vh', backgroundColor: '#f8fafc' }}>
+    <div style={{ height: '30vh', backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
       <ReactFlow
         nodes={initialNodes}
         edges={initialEdges}
@@ -27,7 +27,7 @@ export function SwimlaneDiagram() {
         zoomActivationKeyCode="Meta"
         panActivationKeyCode="Space"
       >
-        <Background variant={BackgroundVariant.Dots} gap={32} size={1} color="#cbd5e1" />
+        <Background variant={BackgroundVariant.Lines} gap={32} size={1} color="#cbd5e1" />
       </ReactFlow>
     </div>
   );

@@ -6,52 +6,54 @@ export const initialNodes: Node[] = [
         id: 'development-lane',
         type: 'group',
         position: { x: 80, y: 0 }, // Increased x offset for label space
-        data: { label: 'Forwarder' },
+        data: { 
+            label: 'Forwarder',
+            color: 'rgba(255, 0, 0, 0.30)'  // Solid red color
+        },
         style: {
             width: 1920,
             height: 200,
-            backgroundColor: 'rgba(6, 182, 212, 0.05)',
-            border: '2px dashed rgba(6, 182, 212, 0.3)',
+            backgroundColor: 'rgba(255, 0, 0, 0.05)',
+            border: '2px dashed rgba(255, 0, 0, 0.3)',
             padding: '20px',
         },
         // Add label styling for group
         dragHandle: '.custom-drag-handle',
         className: 'light',
         expandParent: true,
-        draggable: false,
-        labelBgPadding: [8, 4],
-        labelBgBorderRadius: 4,
+        draggable: false        
     },
     // Testing Lane Background
     {
         id: 'testing-lane',
         type: 'group',
         position: { x: 80, y: 250 }, // Increased x offset for label space
-        data: { label: 'Carrier' },
+        data: { 
+            label: 'Carrier',
+            color: 'rgba(22, 236, 0, 0.3)'  // Solid color matching the border
+        },
         style: {
             width: 1920,
             height: 200,
-            backgroundColor: 'rgba(34, 197, 94, 0.05)',
-            border: '2px dashed rgba(34, 197, 94, 0.3)',
+            backgroundColor: 'rgba(22, 236, 0, 0.05)',
+            border: '2px dashed rgba(22, 236, 0, 0.3)',
             padding: '20px',
         },
         // Add label styling for group
         dragHandle: '.custom-drag-handle',
         className: 'light',
         expandParent: true,
-        draggable: false,
-        labelBgPadding: [8, 4],
-        labelBgBorderRadius: 4,
+        draggable: false
     },
     // Development Tasks
     {
         id: 'design',
-        data: { label: 'Design' },
+        data: { label: 'Subscribe Carrier to Waybill' },
         position: { x: 180, y: 50 }, // x increased by 80
         style: {
             width: 180,
             height: 60,
-            background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
+            background: 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)',
             color: 'white',
             borderRadius: '8px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
@@ -59,8 +61,8 @@ export const initialNodes: Node[] = [
             alignItems: 'center',
             justifyContent: 'center',
         },
-    },
-    {
+        },
+        {
         id: 'implement',
         data: { label: 'Implementation' },
         position: { x: 480, y: 50 }, // x increased by 80
