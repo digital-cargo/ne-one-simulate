@@ -256,8 +256,6 @@
 									"// Try both forward slash and backslash\r",
 									"let partsForwardSlash = locationHeader.split('/');\r",
 									"\r",
-									"console.log(\"Split by forward slash:\", partsForwardSlash);\r",
-									"\r",
 									"// Get the last non-empty element\r",
 									"let actionID = '';\r",
 									"\r",
@@ -759,7 +757,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n \"@context\": {\r\n        \"cargo\": \"https: //onerecord.iata.org/ns/cargo#\",\r\n        \"api\": \"https: //onerecord.iata.org/ns/api#\",\r\n        \"xsd\": \"http://www.w3.org/2001/XMLSchema\"\r\n    },\r\n    \"@type\": \"api:Verification\",\r\n    \"api:hasLogisticsObject\": {\r\n        \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\"\r\n    },\r\n    \"api:hasError\": [{\r\n            \"@type\": \"api:Error\",\r\n            \"api:hasTitle\": \"Empty goodsDescription. Please use goodsDescription to specify the description of the cargo\",\r\n            \"api:hasErrorDetail\": {\r\n                \"@type\": \"api:ErrorDetail\",\r\n                \"api:hasProperty\": {\r\n                    \"@value\": \"https: //onerecord.iata.org/ns/cargo#goodsDescription\",\r\n                    \"@type\": \"xsd:anyURI\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"api:hasRevision\": {\r\n        \"@type\": \"http://www.w3.org/2001/XMLSchema#positiveInteger\",\r\n        \"@value\": \"1\"\r\n    }\r\n}",
+							"raw": "{\r\n \"@context\": {\r\n        \"cargo\": \"https: //onerecord.iata.org/ns/cargo#\",\r\n        \"api\": \"https: //onerecord.iata.org/ns/api#\",\r\n        \"xsd\": \"http://www.w3.org/2001/XMLSchema\"\r\n    },\r\n    \"@type\": \"api:Verification\",\r\n    \"api:hasLogisticsObject\": {\r\n        \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\"\r\n    },\r\n    \"api:hasError\": [{\r\n            \"@type\": \"api:Error\",\r\n            \"api:hasTitle\": \"Generic goodsDescription. Please use a descriptive goodsDescription for customs checks\",\r\n            \"api:hasErrorDetail\": {\r\n                \"@type\": \"api:ErrorDetail\",\r\n                \"api:hasProperty\": {\r\n                    \"@value\": \"https: //onerecord.iata.org/ns/cargo#goodsDescription\",\r\n                    \"@type\": \"xsd:anyURI\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"api:hasRevision\": {\r\n        \"@type\": \"http://www.w3.org/2001/XMLSchema#positiveInteger\",\r\n        \"@value\": \"1\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
