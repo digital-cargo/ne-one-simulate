@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 // Mock data for demonstration
 const testResults = {
   summary: {
-    total: 156,
+    total: 6,
     passed: 142,
     failed: 14,
     duration: "45.3s",
@@ -20,7 +20,7 @@ const testResults = {
   byActor: {
     "Carrier": { total: 45, passed: 42, failed: 3 },
     "Forwarder": { total: 62, passed: 55, failed: 7 },
-    "GHA": { total: 49, passed: 45, failed: 4 },
+    "ULD Management Provider": { total: 49, passed: 45, failed: 4 },
   },
   failedTests: [
     { test_step: "Update Non-Existing ShipmentRecord", test_case: "ShipmentRecord", duration: "2.3s", error: "ShipmentRecord does not exist" },
@@ -63,7 +63,7 @@ export default function TestReport() {
     <div className="flex-col space-y-6 p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Summary</h1>
           <p className="text-muted-foreground">
             Simulation completed on {formattedDate}
           </p>
@@ -111,61 +111,61 @@ export default function TestReport() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Test Results Distribution</CardTitle>
-            <CardDescription>Overall pass/fail ratio</CardDescription>
+        <CardTitle>Test Results Distribution</CardTitle>
+        <CardDescription>Overall pass/fail ratio</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS.chart[index]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+        <div className="h-[200px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={80}
+            paddingAngle={5}
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS.chart[index]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Tests by Actors</CardTitle>
-            <CardDescription>Distribution across involved actors</CardDescription>
+        <CardTitle>Tests by Actors</CardTitle>
+        <CardDescription>Distribution across involved actors</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    paddingAngle={5}
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS.category[index]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+        <div className="h-[200px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+          <Pie
+            data={categoryData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={80}
+            paddingAngle={5}
+          >
+            {categoryData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS.category[index]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
           </CardContent>
         </Card>
       </div>
