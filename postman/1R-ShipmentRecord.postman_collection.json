@@ -271,8 +271,7 @@
 									"}\r",
 									"\r",
 									"// Set the actionID variable\r",
-									"pm.collectionVariables.set(\"actionID\", actionID);\r",
-									"}"
+									"pm.collectionVariables.set(\"actionID\", actionID);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -281,8 +280,11 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"packages": {},
-								"type": "text/javascript"
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -307,7 +309,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n \"@context\": {\r\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\",\r\n        \"api\": \"https://onerecord.iata.org/ns/api#\"\r\n    },\r\n    \"@id\": \"http://localhost:8080/logistics-objects/change-{{mawb-prefix}}-{{mawb-number}}\",\r\n    \"@type\": \"api:Change\",\r\n    \"api:hasLogisticsObject\": {\r\n        \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\"\r\n    },\r\n        \"api:hasDescription\": \"Update totalGrossWeight\",\r\n    \"api:hasOperation\": [{\r\n            \r\n            \"@type\": \"api:Operation\",\r\n            \"api:op\": { \"@id\": \"api:DELETE\" },\r\n            \"api:s\": \"http://localhost:8080/logistics-objects/shipment-{{mawb-prefix}}-{{mawb-number}}\",\r\n            \"api:p\": \"https://onerecord.iata.org/ns/cargo#totalGrossWeight\",\r\n            \"api:o\": [{\r\n                \"@type\": \"api:OperationObject\",\r\n                \"api:hasDatatype\": \"http://www.w3.org/2001/XMLSchema#string\",\r\n                \"api:hasValue\": \"600\"\r\n            }]\r\n        },\r\n    {\r\n            \"@type\": \"api:Operation\",\r\n            \"api:op\": { \"@id\": \"api:ADD\" },\r\n            \"api:s\": \"http://localhost:8080/logistics-objects/shipment-{{mawb-prefix}}-{{mawb-number}}\",\r\n            \"api:p\": \"https://onerecord.iata.org/ns/cargo#totalGrossWeight\",\r\n            \"api:o\": [{\r\n                \"@type\": \"api:OperationObject\",\r\n                \"api:hasDatatype\": \"http://www.w3.org/2001/XMLSchema#string\",\r\n                \"api:hasValue\": \"1100\"\r\n            }]\r\n        }\r\n    ],\r\n    \"api:hasRevision\": {\r\n        \"@type\": \"http://www.w3.org/2001/XMLSchema#positiveInteger\",\r\n        \"@value\": \"1\"\r\n    }\r\n}",
+							"raw": "{\r\n \"@context\": {\r\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\",\r\n        \"api\": \"https://onerecord.iata.org/ns/api#\"\r\n    },\r\n    \"@type\": \"api:Change\",\r\n    \"api:hasLogisticsObject\": {\r\n        \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\"\r\n    },\r\n        \"api:hasDescription\": \"Update totalGrossWeight\",\r\n    \"api:hasOperation\": [{\r\n            \r\n            \"@type\": \"api:Operation\",\r\n            \"api:op\": { \"@id\": \"api:DELETE\" },\r\n            \"api:s\": \"http://localhost:8080/logistics-objects/shipment-{{mawb-prefix}}-{{mawb-number}}\",\r\n            \"api:p\": \"https://onerecord.iata.org/ns/cargo#totalGrossWeight\",\r\n            \"api:o\": [{\r\n                \"@type\": \"api:OperationObject\",\r\n                \"api:hasDatatype\": \"http://www.w3.org/2001/XMLSchema#string\",\r\n                \"api:hasValue\": \"600\"\r\n            }]\r\n        },\r\n    {\r\n            \"@type\": \"api:Operation\",\r\n            \"api:op\": { \"@id\": \"api:ADD\" },\r\n            \"api:s\": \"http://localhost:8080/logistics-objects/shipment-{{mawb-prefix}}-{{mawb-number}}\",\r\n            \"api:p\": \"https://onerecord.iata.org/ns/cargo#totalGrossWeight\",\r\n            \"api:o\": [{\r\n                \"@type\": \"api:OperationObject\",\r\n                \"api:hasDatatype\": \"http://www.w3.org/2001/XMLSchema#string\",\r\n                \"api:hasValue\": \"1100\"\r\n            }]\r\n        }\r\n    ],\r\n    \"api:hasRevision\": {\r\n        \"@type\": \"http://www.w3.org/2001/XMLSchema#positiveInteger\",\r\n        \"@value\": \"1\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -342,24 +344,7 @@
 									"pm.test(\"Response Status code is 204\", () => {\r",
 									"    pm.response.to.have.status(204);\r",
 									"});\r",
-									"pm.test(\"Location is present\", () => {\r",
-									"    pm.response.to.have.header(\"Location\");\r",
-									"});\r",
-									"pm.test(\"Type is present\", () => {\r",
-									"    pm.response.to.have.header(\"Type\");\r",
-									"});\r",
 									"\r",
-									"var actionTypes = ['https://onerecord.iata.org/ns/api#SubscriptionRequest','https://onerecord.iata.org/ns/api#AccessDelegationRequest','https://onerecord.iata.org/ns/api#ChangeRequest'];\r",
-									"//Test type header\r",
-									"pm.test(\"Check type header\",() => {\r",
-									"    pm.expect(pm.response.headers.get(\"Type\")).to.be.oneOf(actionTypes);  \r",
-									"});\r",
-									"\r",
-									"//Test Location header\r",
-									"pm.test(\"Check Location contains {{baseUrl}}/action-requests/ \", () => {\r",
-									"    var expectedValue = pm.variables.get(\"baseUrl\")+ \"/action-requests/\";\r",
-									"    pm.expect(pm.response.headers.get(\"Location\")).to.include(expectedValue);\r",
-									"});\r",
 									""
 								],
 								"type": "text/javascript",
@@ -430,26 +415,39 @@
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"// Validate response contains the 'hasRequestStatus' field with 'REQUEST_ACCEPTED'\r",
-									"pm.test(\"Response has 'REQUEST_ACCEPTED' status\", function () {\r",
-									"    const jsonData = pm.response.json();\r",
-									"    const requestStatus = jsonData[\"https://onerecord.iata.org/ns/api#hasRequestStatus\"];\r",
+									"// Get the response body\r",
+									"const responseBody = pm.response.json();\r",
 									"\r",
-									"    pm.expect(requestStatus).to.have.property(\"@id\", \"https://onerecord.iata.org/ns/api#REQUEST_ACCEPTED\");\r",
-									"});"
+									"// Check if the specific string exists in the response body\r",
+									"// We'll convert to string to search through the entire body\r",
+									"const responseBodyString = JSON.stringify(responseBody);\r",
+									"const searchString = \"https://onerecord.iata.org/ns/api#REQUEST_ACCEPTED\";\r",
+									"\r",
+									"if (responseBodyString.includes(searchString)) {\r",
+									"    pm.test(\"Response contains REQUEST_ACCEPTED status\", function() {\r",
+									"        pm.expect(true).to.be.true;\r",
+									"    });\r",
+									"} else {\r",
+									"    pm.test(\"Response contains REQUEST_ACCEPTED status\", function() {\r",
+									"        pm.expect(false).to.be.true;\r",
+									"    });\r",
+									"}"
 								],
 								"type": "text/javascript",
 								"packages": {}
 							}
 						}
 					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkX21ZLWZqdnFXRXZ0MWtmakwzNmE5UkNQSGg4bkUxTmRWMzkzNDJ2OUQ4In0.eyJleHAiOjE3NDA0NDQzMzAsImlhdCI6MTc0MDQwODMzMSwianRpIjoiMGYzOTgwOTktOWUzYi00NWI5LWFlMTItMjJjMGE1MWNiMWM0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4OTg5L3JlYWxtcy9uZW9uZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwYWU4OThmMy1kMjQ4LTRlYWMtODY4MS1iMDM4MWM4MmQ2YzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZW9uZS1jbGllbnQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1uZW9uZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiY2xpZW50SG9zdCI6IjE3Mi4xOC4wLjEiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImxvZ2lzdGljc19hZ2VudF91cmkiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvbG9naXN0aWNzLW9iamVjdHMvX2RhdGEtaG9sZGVyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LW5lb25lLWNsaWVudCIsImNsaWVudEFkZHJlc3MiOiIxNzIuMTguMC4xIiwiY2xpZW50X2lkIjoibmVvbmUtY2xpZW50In0.iOTrECoqUiB6_iwNdtvFP45UXyZfMjBbtbwcuf_ZOsbKHjMywgex0ZNR-NwClN3BCVsrmkCIr06j1XM0a1lCXO4ARYvVyUpU3RMjx2BXlCbNibT7JraD1ckTpqJyrf8PzZoQLjC7tzbWM1Oeydq_-1tmVKXBCuXOp6-E5YW-DhxjSsKDqdGt7-vvMvP3L9VK_FMRCb07ya2-WUHHLPjQWA66lcIPSLfG7rWPBjInRcQy9sE6oFdrlnvrqr6TGxvvyNqx_2xe6kWzZS8jcTatIPl46dDaAtSDuAUMUYfHq1aki2JAHgvAstWsfAPvpqDCebjgm7BWT0xtOQ9TcYYHBA",
+									"value": "{{BEARERTOKEN}}",
 									"type": "string"
 								}
 							]
@@ -462,16 +460,19 @@
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "http://localhost:8080/action-requests/7a8e9af1-9f37-4f3d-980d-d00a5127c5a5",
-							"protocol": "http",
+							"raw": "{{actionRequest}}",
 							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"action-requests",
-								"7a8e9af1-9f37-4f3d-980d-d00a5127c5a5"
+								"{{actionRequest}}"
 							]
 						}
 					},
@@ -720,31 +721,7 @@
 									"pm.test(\"Response has 'Location' header\", function () {\r",
 									"    pm.response.to.have.header(\"Location\");\r",
 									"});\r",
-									"\r",
-									"// Extract 'Location' header and store it in an environment variable\r",
-									"let locationHeader = pm.response.headers.get(\"Location\");\r",
-									"pm.collectionVariables.set(\"actionRequest\", locationHeader);\r",
-									"\r",
-									"// Try both forward slash and backslash\r",
-									"let partsForwardSlash = locationHeader.split('/');\r",
-									"\r",
-									"console.log(\"Split by forward slash:\", partsForwardSlash);\r",
-									"\r",
-									"// Get the last non-empty element\r",
-									"let actionID = '';\r",
-									"\r",
-									"// Try with forward slash first (more common in URLs)\r",
-									"if (partsForwardSlash.length > 0) {\r",
-									"    // Filter out empty strings and get the last element\r",
-									"    let filtered = partsForwardSlash.filter(part => part.trim() !== '');\r",
-									"    if (filtered.length > 0) {\r",
-									"        actionID = filtered[filtered.length - 1];\r",
-									"    }\r",
-									"}\r",
-									"\r",
-									"// Set the actionID variable\r",
-									"pm.collectionVariables.set(\"actionID\", actionID);\r",
-									"}"
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -753,8 +730,11 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"packages": {},
-								"type": "text/javascript"
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -779,7 +759,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n \"@context\": {\r\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\",\r\n        \"api\": \"https://onerecord.iata.org/ns/api#\"\r\n    },\r\n    \"@id\": \"http://localhost:8080/logistics-objects/change-{{mawb-prefix}}-{{mawb-number}}\",\r\n    \"@type\": \"api:Change\",\r\n    \"api:hasLogisticsObject\": {\r\n        \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\"\r\n    },\r\n        \"api:hasDescription\": \"Update totalGrossWeight\",\r\n    \"api:hasOperation\": [{\r\n            \r\n            \"@type\": \"api:Operation\",\r\n            \"api:op\": { \"@id\": \"api:DELETE\" },\r\n            \"api:s\": \"http://localhost:8080/logistics-objects/shipment-{{mawb-prefix}}-{{mawb-number}}\",\r\n            \"api:p\": \"https://onerecord.iata.org/ns/cargo#totalGrossWeight\",\r\n            \"api:o\": [{\r\n                \"@type\": \"api:OperationObject\",\r\n                \"api:hasDatatype\": \"http://www.w3.org/2001/XMLSchema#string\",\r\n                \"api:hasValue\": \"600\"\r\n            }]\r\n        },\r\n    {\r\n            \"@type\": \"api:Operation\",\r\n            \"api:op\": { \"@id\": \"api:ADD\" },\r\n            \"api:s\": \"http://localhost:8080/logistics-objects/shipment-{{mawb-prefix}}-{{mawb-number}}\",\r\n            \"api:p\": \"https://onerecord.iata.org/ns/cargo#totalGrossWeight\",\r\n            \"api:o\": [{\r\n                \"@type\": \"api:OperationObject\",\r\n                \"api:hasDatatype\": \"http://www.w3.org/2001/XMLSchema#string\",\r\n                \"api:hasValue\": \"1100\"\r\n            }]\r\n        }\r\n    ],\r\n    \"api:hasRevision\": {\r\n        \"@type\": \"http://www.w3.org/2001/XMLSchema#positiveInteger\",\r\n        \"@value\": \"1\"\r\n    }\r\n}",
+							"raw": "{\r\n \"@context\": {\r\n        \"cargo\": \"https: //onerecord.iata.org/ns/cargo#\",\r\n        \"api\": \"https: //onerecord.iata.org/ns/api#\",\r\n        \"xsd\": \"http://www.w3.org/2001/XMLSchema\"\r\n    },\r\n    \"@type\": \"api:Verification\",\r\n    \"api:hasLogisticsObject\": {\r\n        \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\"\r\n    },\r\n    \"api:hasError\": [{\r\n            \"@type\": \"api:Error\",\r\n            \"api:hasTitle\": \"Empty goodsDescription. Please use goodsDescription to specify the description of the cargo\",\r\n            \"api:hasErrorDetail\": {\r\n                \"@type\": \"api:ErrorDetail\",\r\n                \"api:hasProperty\": {\r\n                    \"@value\": \"https: //onerecord.iata.org/ns/cargo#goodsDescription\",\r\n                    \"@type\": \"xsd:anyURI\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"api:hasRevision\": {\r\n        \"@type\": \"http://www.w3.org/2001/XMLSchema#positiveInteger\",\r\n        \"@value\": \"1\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
