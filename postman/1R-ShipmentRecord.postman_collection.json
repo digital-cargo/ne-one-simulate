@@ -478,6 +478,330 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Verification request",
+			"item": [
+				{
+					"name": "Create ShipmentRecord",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Define a function to generate a random 8-digit number",
+									"function generateRandomNumber() {",
+									"    return Math.floor(10000000 + Math.random() * 90000000).toString();",
+									"}",
+									"",
+									"// Set random MAWB number",
+									"pm.collectionVariables.set(\"mawb-prefix\", \"020\");",
+									"pm.collectionVariables.set(\"mawb-number\", generateRandomNumber());",
+									"pm.collectionVariables.set(\"arrival-Location\", \"PVG\");",
+									"pm.collectionVariables.set(\"departure-Location\", \"HAJ\");",
+									"pm.collectionVariables.set(\"Consignor Company Name\", \"CompanyName\");",
+									"pm.collectionVariables.set(\"Current Date\", \"2023-01-18T00:00:00\");",
+									"pm.collectionVariables.set(\"Carrier City Name\", \"CityName1\");",
+									"pm.collectionVariables.set(\"Shipment Gross Weight\", \"600\");",
+									"pm.collectionVariables.set(\"Shipment Volume\", \"1\");",
+									"pm.collectionVariables.set(\"Shipment goods description\", \"PARTS FOR GRAB ACCESSORIES NOT RESTRICTED\");",
+									"pm.collectionVariables.set(\"Handling Instructions\", \"Marks: Address Att. docs: Commercial invoice References: AB67713\");",
+									"pm.collectionVariables.set(\"Height-Piece1\", \"95\");",
+									"pm.collectionVariables.set(\"Lenght-Piece1\", \"140\");",
+									"pm.collectionVariables.set(\"Volume-Piece1\", \"1.20\");",
+									"pm.collectionVariables.set(\"Width-Piece1\", \"90\");",
+									"pm.collectionVariables.set(\"NvdForCarriageTrue\", \"True\");",
+									"pm.collectionVariables.set(\"Prepaid Payment Type\", \"P\");",
+									"pm.collectionVariables.set(\"Due-Carrier\", \"C\");",
+									"pm.collectionVariables.set(\"GEN Accounting Identifier\", \"GEN\");",
+									"pm.collectionVariables.set(\"iterationNumber\", \"000001\");",
+									"pm.collectionVariables.set(\"customsCode\", \"X\");",
+									"pm.collectionVariables.set(\"Due-Carrier\", \"C\");",
+									"",
+									"// Get token using Client Credentials grant type",
+									"pm.sendRequest({",
+									"    url: \"http://localhost:8989\" + \"/realms/neone/protocol/openid-connect/token\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Accept\": \"application/json\",",
+									"        \"Content-Type\": \"application/x-www-form-urlencoded\"",
+									"    },",
+									"    body: {",
+									"        mode: \"urlencoded\",",
+									"        urlencoded: [",
+									"            { key: \"grant_type\", value: \"client_credentials\" },",
+									"            { key: \"client_id\", value: \"neone-client\" },",
+									"            { key: \"client_secret\", value: \"lx7ThS5aYggdsMm42BP3wMrVqKm9WpNY\" }",
+									"        ]",
+									"    }",
+									"}, (err, res) => {",
+									"    if (err) {",
+									"        console.log(\"Token request failed:\", err);",
+									"    } else {",
+									"        // Set the access token",
+									"        pm.collectionVariables.set(\"BEARERTOKEN\", res.json().access_token);",
+									"    }",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate HTTP Status Code",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Validate response contains the 'Location' header",
+									"pm.test(\"Response has 'Location' header\", function () {",
+									"    pm.response.to.have.header(\"Location\");",
+									"});",
+									"",
+									"// Extract 'Location' header and store it in an environment variable",
+									"let locationHeader = pm.response.headers.get(\"Location\");",
+									"",
+									"if (locationHeader) {",
+									"    pm.collectionVariables.set(\"shipmentRecord\", locationHeader);",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"@context\": {\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\"\n    },\n    \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\",\n    \"@type\": \"cargo:Waybill\",\n    \"cargo:waybillType\": {\n        \"@id\": \"https://onerecord.iata.org/ns/cargo#MASTER\"\n    },\n    \"cargo:waybillPrefix\": \"{{mawb-prefix}}\",\n    \"cargo:waybillNumber\": \"{{mawb-number}}\",\n    \"cargo:customsOriginCode\": \"{{customsCode}}\",\n    \"cargo:arrivalLocation\": \"{{arrival-Location}}\",\n    \"cargo:departureLocation\": \"{{departure-Location}}\",\n    \"cargo:consignorDeclarationSignature\": \"{{Consignor Company Name}}\",\n    \"cargo:carrierDeclarationDate\": \"{{Current Date}}\",\n    \"cargo:carrierDeclarationSignature\": \"PersonName1\",\n    \"cargo:carrierDeclarationPlace\": \"{{Carrier City Name}}\",\n    \"cargo:shipment\": [\n        {\n        \"@id\": \"http://localhost:8080/logistics-objects/shipment-{{mawb-prefix}}-{{mawb-number}}\",\n        \"@type\": \"cargo:Shipment\",\n        \"cargo:totalGrossWeight\": \"{{Shipment Gross Weight}}\",\n        \"cargo:totalDimension\": {\n            \"cargo:volume\": \"{{Shipment Volume}}\"\n        },\n        \"cargo:goodsDescription\": \"{{Shipment goods description}}\",\n        \"cargo:textualHandlingInstructions\": \"[[{{Handling Instructions}}]]\",\n        \"cargo:pieces\": [\n            {\n            \"@id\": \"http://localhost:8080/logistics-objects/pieces-{{mawb-prefix}}-{{mawb-number}}\",\n            \"@type\": \"cargo:Piece\",\n            \"cargo:dimension\": {\n                \"cargo:height\": \"{{Height-Piece1}}\",\n                \"cargo:lenght\": \"{{Lenght-Piece1}}\",\n                \"cargo:width\": \"{{Width-Piece1}}\",\n                \"cargo:volume\": \"{{Volume-Piece1}}\"\n            },\n            \"cargo:grossWeight\": \"600\",\n            \"cargo:volumetricWeight\": {\n                \"cargo:chargeableWeight\": \"600\"\n            },\n            \"cargo:ndvForCarriage\": \"{{NvdForCarriageTrue}}\",\n            \"cargo:nvdForCustoms\": \"{{NvdForCustomsTrue}}\"\n            }\n        ],\n        \"cargo:customsInformation\": [\n            {\n            \"cargo:contentCode\": \"CP\",\n            \"cargo:subjectCode\": \"CNE\",\n            \"cargo:country\": \"CN\",\n            \"cargo:otherCustomsInformation\": \"PersonName2\"\n            }\n        ]\n        }\n    ],\n    \"cargo:otherCharges:\": [\n        {\n        \"cargo:chargePaymentType\": \"{{Prepaid Payment Type}}\",\n        \"cargo:entitlement\": \"{{Due-Carrier}}\",\n        \"cargo:otherChargeCode\": \"MY\",\n        \"cargo:otherChargeAmount\": {\n            \"cargo:numericalValue\": \"267,75\",\n            \"cargo:currencyUnit\": \"EUR\"\n        }\n        },\n        {\n        \"cargo:chargePaymentType\": \"{{Prepaid Payment Type}}\",\n        \"cargo:entitlement\": \"{{Due-Carrier}}\",\n        \"cargo:otherChargeCode\": \"DG\",\n        \"cargo:otherChargeAmount\": {\n            \"cargo:numericalValue\": \"125,00\",\n            \"cargo:currencyUnit\": \"EUR\"\n        }\n        }\n    ],\n    \"cargo:accountingNote\": {\n        \"cargo:accountingNoteIdentifier\": \"{{GEN Accounting Identifier}}\",\n        \"cargo:accountingNoteText\": \"Express CargoYNZ\"\n    }\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/logistics-objects",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"logistics-objects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get ShipmentRecord",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate HTTP Status Code",
+									"pm.test(\"ShipmentRecord exists\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validate 'Revision' header is a positive numerical value",
+									"pm.test(\"Revision header is a positive numerical value\", function () {",
+									"    const revisionHeader = pm.response.headers.get('Revision');",
+									"    pm.expect(revisionHeader).to.be.a('string');",
+									"    const revisionNumber = Number(revisionHeader);",
+									"    pm.expect(revisionNumber).to.be.a('number');",
+									"    pm.expect(revisionNumber).to.be.above(0);",
+									"});",
+									"",
+									"// Validate 'Latest-Revision' header is a positive numerical value",
+									"pm.test(\"Latest-Revision header is a non-negative numerical value\", function () {",
+									"    const latestRevisionHeader = pm.response.headers.get('Latest-Revision');",
+									"    pm.expect(latestRevisionHeader).to.be.a('string');",
+									"    const latestRevisionNumber = Number(latestRevisionHeader);",
+									"    pm.expect(latestRevisionNumber).to.be.a('number');",
+									"    pm.expect(latestRevisionNumber).to.be.at.least(0);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}?embedded=true",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"logistics-objects",
+								"waybill-{{mawb-prefix}}-{{mawb-number}}"
+							],
+							"query": [
+								{
+									"key": "embedded",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change grossweight of Piece",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate HTTP Status Code\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Validate response contains the 'Location' header\r",
+									"pm.test(\"Response has 'Location' header\", function () {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"});\r",
+									"\r",
+									"// Extract 'Location' header and store it in an environment variable\r",
+									"let locationHeader = pm.response.headers.get(\"Location\");\r",
+									"pm.collectionVariables.set(\"actionRequest\", locationHeader);\r",
+									"\r",
+									"// Try both forward slash and backslash\r",
+									"let partsForwardSlash = locationHeader.split('/');\r",
+									"\r",
+									"console.log(\"Split by forward slash:\", partsForwardSlash);\r",
+									"\r",
+									"// Get the last non-empty element\r",
+									"let actionID = '';\r",
+									"\r",
+									"// Try with forward slash first (more common in URLs)\r",
+									"if (partsForwardSlash.length > 0) {\r",
+									"    // Filter out empty strings and get the last element\r",
+									"    let filtered = partsForwardSlash.filter(part => part.trim() !== '');\r",
+									"    if (filtered.length > 0) {\r",
+									"        actionID = filtered[filtered.length - 1];\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"// Set the actionID variable\r",
+									"pm.collectionVariables.set(\"actionID\", actionID);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"@context\": {\r\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\",\r\n        \"api\": \"https://onerecord.iata.org/ns/api#\"\r\n    },\r\n    \"@id\": \"http://localhost:8080/logistics-objects/change-{{mawb-prefix}}-{{mawb-number}}\",\r\n    \"@type\": \"api:Change\",\r\n    \"api:hasLogisticsObject\": {\r\n        \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\"\r\n    },\r\n        \"api:hasDescription\": \"Update totalGrossWeight\",\r\n    \"api:hasOperation\": [{\r\n            \r\n            \"@type\": \"api:Operation\",\r\n            \"api:op\": { \"@id\": \"api:DELETE\" },\r\n            \"api:s\": \"http://localhost:8080/logistics-objects/shipment-{{mawb-prefix}}-{{mawb-number}}\",\r\n            \"api:p\": \"https://onerecord.iata.org/ns/cargo#totalGrossWeight\",\r\n            \"api:o\": [{\r\n                \"@type\": \"api:OperationObject\",\r\n                \"api:hasDatatype\": \"http://www.w3.org/2001/XMLSchema#string\",\r\n                \"api:hasValue\": \"600\"\r\n            }]\r\n        },\r\n    {\r\n            \"@type\": \"api:Operation\",\r\n            \"api:op\": { \"@id\": \"api:ADD\" },\r\n            \"api:s\": \"http://localhost:8080/logistics-objects/shipment-{{mawb-prefix}}-{{mawb-number}}\",\r\n            \"api:p\": \"https://onerecord.iata.org/ns/cargo#totalGrossWeight\",\r\n            \"api:o\": [{\r\n                \"@type\": \"api:OperationObject\",\r\n                \"api:hasDatatype\": \"http://www.w3.org/2001/XMLSchema#string\",\r\n                \"api:hasValue\": \"1100\"\r\n            }]\r\n        }\r\n    ],\r\n    \"api:hasRevision\": {\r\n        \"@type\": \"http://www.w3.org/2001/XMLSchema#positiveInteger\",\r\n        \"@value\": \"1\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"logistics-objects",
+								"waybill-{{mawb-prefix}}-{{mawb-number}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
