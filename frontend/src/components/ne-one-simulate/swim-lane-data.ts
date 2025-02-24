@@ -1,82 +1,22 @@
-import { type Node, type Edge } from "@xyflow/react";
+// frontend/src/components/ne-one-simulate/swim-lane-data.ts
+import { Node, Edge } from "@xyflow/react";
 
-export const initialNodes: Node[] = [
-    // Development Lane Background
+interface Actor {
+  serverEndpoint: string;
+  action: string
+}
+
+interface ActorConfig {
+    serverEndpoint: string;
+    name: string;
+    color: string;
+}
+
+const actors: ActorConfig[] = [
     {
-        id: 'development-lane',
-        type: 'group',
-        position: { x: 80, y: 0 }, // Increased x offset for label space
-        data: { 
-            label: 'Forwarder',
-            color: 'rgba(255, 0, 0, 0.30)'  // Solid red color
-        },
-        style: {
-            width: 1920,
-            height: 200,
-            backgroundColor: 'rgba(255, 0, 0, 0.05)',
-            border: '2px dashed rgba(255, 0, 0, 0.3)',
-            padding: '20px',
-        },
-        // Add label styling for group
-        dragHandle: '.custom-drag-handle',
-        className: 'light',
-        expandParent: true,
-        draggable: false        
-    },
-    // Testing Lane Background
-    {
-        id: 'testing-lane',
-        type: 'group',
-        position: { x: 80, y: 250 }, // Increased x offset for label space
-        data: { 
-            label: 'Carrier',
-            color: 'rgba(22, 236, 0, 0.3)'  // Solid color matching the border
-        },
-        style: {
-            width: 1920,
-            height: 200,
-            backgroundColor: 'rgba(22, 236, 0, 0.05)',
-            border: '2px dashed rgba(22, 236, 0, 0.3)',
-            padding: '20px',
-        },
-        // Add label styling for group
-        dragHandle: '.custom-drag-handle',
-        className: 'light',
-        expandParent: true,
-        draggable: false
-    },
-    // Development Tasks
-    {
-        id: 'design',
-        data: { label: 'Subscribe Carrier to Waybill' },
-        position: { x: 180, y: 50 }, // x increased by 80
-        style: {
-            width: 180,
-            height: 60,
-            background: 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)',
-            color: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        },
-        {
-        id: 'implement',
-        data: { label: 'Implementation' },
-        position: { x: 480, y: 50 }, // x increased by 80
-        style: {
-            width: 180,
-            height: 60,
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-            color: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
+        serverEndpoint: 'http://localhost:8080',
+        name: 'Forwarder',
+        color: 'red',
     },
     {
         id: 'review',
@@ -93,78 +33,93 @@ export const initialNodes: Node[] = [
             alignItems: 'center',
             justifyContent: 'center',
         },
-    },
-    // Testing Tasks
-    {
-        id: 'unit',
-        data: { label: 'Unit Tests' },
-        position: { x: 180, y: 300 }, // x increased by 80
-        style: {
-            width: 180,
-            height: 60,
-            background: 'linear-gradient(135deg, #22c55e 0%, #84cc16 100%)',
-            color: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
+        serverEndpoint: 'http://localhost:8081',
+        name: 'Carrier',
+        color: '#0000FF',
     },
     {
-        id: 'integration',
-        data: { label: 'Integration Tests' },
-        position: { x: 480, y: 300 }, // x increased by 80
-        style: {
-            width: 180,
-            height: 60,
-            background: 'linear-gradient(135deg, #f59e0b 0%, #facc15 100%)',
-            color: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-    },
-    {
-        id: 'bugfix',
-        data: { label: 'Bug Fixing' },
-        position: { x: 780, y: 300 }, // x increased by 80
-        style: {
-            width: 180,
-            height: 60,
-            background: 'linear-gradient(135deg, #ef4444 0%, #f97316 100%)',
-            color: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
+        serverEndpoint: 'http://localhost:8082',
+        name: 'ULD Management Provider',
+        color: '#ec6802',
     },
 ];
 
-export const initialEdges: Edge[] = [
+
+  
+  const actorData: Actor[] = [
     {
-        id: 'design-unit',
-        source: 'design',
-        target: 'unit',
-        animated: true,
-        style: { stroke: '#64748b', strokeWidth: 2 },
+      serverEndpoint: "http://localhost:8080",
+      action: "Subscribe Carrier to ShipmentRecord"
     },
     {
-        id: 'implement-integration',
-        source: 'implement',
-        target: 'integration',
-        animated: true,
-        style: { stroke: '#64748b', strokeWidth: 2 },
+      serverEndpoint: "http://localhost:8080",
+      action: "Create ShipmentRecord"
     },
     {
-        id: 'review-bugfix',
-        source: 'review',
-        target: 'bugfix',
-        animated: true,
-        style: { stroke: '#64748b', strokeWidth: 2 },
+      serverEndpoint: "http://localhost:8081",
+      action: "Received Notifications"
     },
-];
+    {
+      serverEndpoint: "http://localhost:8081",
+      action: "Get Shipment Record"
+    },
+    {
+      serverEndpoint: "http://localhost:8081",
+      action: "Change gross weight of Piece"
+    },
+    {
+      serverEndpoint: "http://localhost:8080",
+      action: "Received change request"
+    },
+    {
+      serverEndpoint: "http://localhost:8080",
+      action: "Accept change request"
+    },
+    {
+      serverEndpoint: "http://localhost:8081",
+      action: "Received Notifications about LO_Updated"
+    },
+    {
+      serverEndpoint: "http://localhost:8081",
+      action: "Check if object updated"
+    }
+  ];
+
+
+const leftmostX = 100; // Fixed left position for labels
+
+const groupedNodes: Record<string, number> = {}; // Track y positions per serverEndpoint
+
+const initialNodes: Node[] = actorData.map((actor, index) => {
+  const actorConfig = actors.find((config) => config.serverEndpoint === actor.serverEndpoint);
+  const actorIndex = actors.findIndex((config) => config.serverEndpoint === actor.serverEndpoint);
+  
+  if (!actorConfig) return null; // Safety check
+
+  // If this serverEndpoint is seen for the first time, store y position
+  if (!(actor.serverEndpoint in groupedNodes)) {
+    groupedNodes[actor.serverEndpoint] = 50 + actorIndex * 100;
+  }
+
+  return {
+    id: (index + 1).toString(),
+    type: "default",
+    position: { x: leftmostX + index * 200, y: groupedNodes[actor.serverEndpoint] },
+    data: { label: `${actorConfig.name}: ${actor.action}` },
+  };
+}).filter(Boolean); 
+
+const initialEdges: Edge[] = [
+    { id: "e1-2", source: "1", target: "2" },
+    { id: "e2-3", source: "2", target: "3" },
+    { id: "e3-4", source: "3", target: "4" },
+    { id: "e4-5", source: "4", target: "5" },
+    { id: "e5-6", source: "5", target: "6" },
+    { id: "e6-7", source: "6", target: "7" },
+    { id: "e7-8", source: "7", target: "8" },
+    { id: "e8-9", source: "8", target: "9" },
+  ];
+  
+
+export { initialNodes, initialEdges };
+

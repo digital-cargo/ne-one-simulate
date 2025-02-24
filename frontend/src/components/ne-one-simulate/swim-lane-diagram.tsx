@@ -1,6 +1,9 @@
+'use client';
+
+import React, { useState, useEffect } from "react";
 import { ReactFlow, Background, ConnectionLineType, type Node, type Edge, BackgroundVariant } from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
-import { initialNodes, initialEdges } from './swim-lane-data';
+import { initialNodes as rawNodes, initialEdges } from './swim-lane-data';
 import { GroupNode } from './group-node';
 
 export function SwimlaneDiagram() {
@@ -8,10 +11,37 @@ export function SwimlaneDiagram() {
     group: GroupNode,
   };
 
+  const [nodes, setNodes] = useState<Node[]>(rawNodes);
+
+
+const animationDuration = 1000; // 1 second per node
+
+  useEffect(() => {
+    let currentIndex = 0;
+
+    const interval = setInterval(() => {
+      if (currentIndex >= rawNodes.length) {
+        // Reset all nodes to grey and restart animation
+        setNodes(rawNodes.map((node) => ({ ...node, style: { backgroundColor: "#d1d5db", padding: 10, borderRadius: 8 } })));
+        currentIndex = 0;
+      } else {
+        // Turn one node green at a time
+        setNodes((prevNodes) =>
+          prevNodes.map((node, i) =>
+            i === currentIndex ? { ...node, style: { backgroundColor: "#86efac", padding: 10, borderRadius: 8 } } : node
+          )
+        );
+        currentIndex++;
+      }
+    }, animationDuration);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div style={{ height: '30vh', backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
       <ReactFlow
-        nodes={initialNodes}
+        nodes={nodes}
         edges={initialEdges}
         nodeTypes={nodeTypes}
         connectionLineType={ConnectionLineType.SmoothStep}
