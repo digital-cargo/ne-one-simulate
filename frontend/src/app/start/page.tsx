@@ -29,9 +29,32 @@ export default function StartPage() {
     if (storedFiles) {
       setFiles(JSON.parse(storedFiles))
     }
+    
     const collection = localStorage.getItem('postmanCollection')
     if (collection) {
-      router.push('/summary')
+      try {
+        const base64Collection = btoa(collection);
+        fetch('http://localhost:3333/run-collection', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ collection: base64Collection }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+          localStorage.setItem('runCollectionResponse', JSON.stringify(data));
+          router.push('/summary')
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          setIsLoading(false)
+        });
+      } catch (error) {
+        console.error('Error encoding collection:', error);
+        setIsLoading(false)
+      }
     } else {
       setIsLoading(false)
     }

@@ -47,9 +47,9 @@ export default function TestRunResults() {
                     <dt className="text-sm font-medium text-gray-500">Create VerificationRequest</dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                         <div className="mb-2">
-                            <span className="font-semibold">GET</span>{" "}
+                            <span className="font-semibold">POST</span>{" "}
                             http://localhost:8080/logistics-objects/waybill-020-31021847
-                            <span className="ml-2 text-red-600">[404 Not Found, 0B, 250ms]</span>
+                            <span className="ml-2 text-red-600">[500 Not Found, 0B, 250ms]</span>
                         </div>
                         <div className="flex items-center text-red-600">
                             <CheckCircle className="h-5 w-5 mr-2" />

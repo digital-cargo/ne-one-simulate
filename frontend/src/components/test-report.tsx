@@ -3,36 +3,74 @@
 import { useEffect, useState } from "react"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
 import { FlaskConical, CheckCircle2, XCircle } from "lucide-react"
+const postmanData = JSON.parse(localStorage.getItem("runCollectionResponse") || "[]")
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-// Mock data for demonstration
-const testResults = {
-  summary: {
-    total: 6,
-    passed: 142,
-    failed: 14,
-    duration: "45.3s",
-  },
-  byActor: {
-    "Carrier": { total: 45, passed: 42, failed: 3 },
-    "Forwarder": { total: 62, passed: 55, failed: 7 },
-    "ULD Management Provider": { total: 49, passed: 45, failed: 4 },
-  },
-  failedTests: [
-    { test_step: "Request verification of goods description", test_case: "TEST-2", duration: "2.3s", error: "VerificationRequest not implemented" },
-    { test_step: "Check VerificationRequest", test_case: "TEST-2", duration: "13.3s", error: "VerificationRequest does not exist" },    
-  ],
+const processPostmanData = () => {
+  let totalTests = 0
+  let passedTests = 0
+  let failedTests: Array<{
+    test_case: string
+    test_step: string
+    error: string
+    duration: string
+  }> = []
+
+  const byActor: Record<string, { total: number; passed: number; failed: number }> = {}
+
+  postmanData.forEach(testCase => {
+    // Initialize actor stats if not exists
+    if (!byActor[testCase.test_case]) {
+      byActor[testCase.test_case] = { total: 0, passed: 0, failed: 0 }
+    }
+
+    testCase.requests.forEach(request => {
+      const requestAssertions = request.assertions || []
+      totalTests += requestAssertions.length
+      
+      requestAssertions.forEach(assertion => {
+        if (assertion.passed) {
+          passedTests++
+          byActor[testCase.test_case].passed++
+        } else {
+          failedTests.push({
+            test_case: testCase.test_case,
+            test_step: request.name,
+            error: assertion.assertion,
+            duration: "1000ms" // Fixed duration as it's not in the data
+          })
+          byActor[testCase.test_case].failed++
+        }
+      })
+      
+      byActor[testCase.test_case].total += requestAssertions.length
+    })
+  })
+
+  return {
+    summary: {
+      total: totalTests,
+      passed: passedTests,
+      failed: totalTests - passedTests,
+      duration: "N/A"
+    },
+    byActor,
+    failedTests
+  }
 }
 
 export default function TestReport() {
   const [formattedDate, setFormattedDate] = useState<string>("")
+  const testResults = processPostmanData()
   
   useEffect(() => {
-    setFormattedDate(new Date().toLocaleString('en-US', { 
+    // Move date formatting to client-side only
+    const now = new Date()
+    const formatted = now.toLocaleString('en-US', { 
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -40,7 +78,8 @@ export default function TestReport() {
       minute: '2-digit',
       second: '2-digit',
       hour12: false
-    }))
+    })
+    setFormattedDate(formatted)
   }, [])
 
   const chartData = [
@@ -64,7 +103,7 @@ export default function TestReport() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Summary</h1>
           <p className="text-muted-foreground">
-            Simulation completed on {formattedDate}
+            {formattedDate ? `Simulation completed on ${formattedDate}` : 'Loading...'}
           </p>
         </div>
         <Button>Download Report</Button>
@@ -140,8 +179,8 @@ export default function TestReport() {
         </Card>
         <Card>
           <CardHeader>
-        <CardTitle>Tests by Actors</CardTitle>
-        <CardDescription>Distribution across involved actors</CardDescription>
+        <CardTitle>Tests by Test Scenario</CardTitle>
+        <CardDescription>Distribution across test scenarios</CardDescription>
           </CardHeader>
           <CardContent>
         <div className="h-[200px] w-full">

@@ -1,61 +1,68 @@
-import { promises as fs } from "fs"
-import path from "path"
-import { Metadata } from "next"
-import Image from "next/image"
-import { z } from "zod"
+"use client";
 
+import { Metadata } from "next"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
-import { taskSchema } from "./data/schema"
-import { Card, CardContent, CardHeader, CardTitle } from "@/registry/new-york/ui/card"
-
-export const metadata: Metadata = {
-  title: "Test scenarios",
-  description: "A task and issue tracker build using Tanstack Table.",
-}
-
-// Simulate a database read for tasks.
-async function getTasks() {
-
-  const data = await fs.readFile(
-    path.join(process.cwd(), "/src/app/tests/data/tasks.json")
-  )
+const postmanData = JSON.parse(localStorage.getItem("runCollectionResponse") || "[]");
+import { chownSync } from "fs";
 
 
-  const tasks = JSON.parse(data.toString())
+export default function TestPage() {
+  
+  // counter 
+  // id is a counter
+  console.log(postmanData);
+  const formattedData = postmanData.map((item: any, index: number) => {
+    const result = item.requests.reduce(
+      (acc: any, request: any) => {
+      request.assertions.forEach((assertion: any) => {
+        if (assertion.passed) {
+        acc.passed += 1;
+        } else {
+        acc.failed += 1;
+        }
+      });
+      return acc;
+      },
+      { passed: 0, failed: 0 }
+    );
 
-  return z.array(taskSchema).parse(tasks)
-}
+    return {
+      id: `TEST-${index + 1}`,
+      title: item.test_case,
+      result: `${result.passed}/${result.passed + result.failed}`,
+      passed: true,
+    };
+  });
 
-export default async function TaskPage() {
-  const tasks = await getTasks()
+  console.log(formattedData)
+
+  
+
+
+  
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-
       <div className="flex-col space-y-6 p-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Test scenarios</h1>
-            <p className="text-muted-foreground">
-              This is a list of the test scenarios defined in the uploaded Postman collection.
-            </p>
-          </div>
-
+        <div className="flex items-center justify-between"></div>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Test scenarios</h1>
+          <p className="text-muted-foreground">
+            Overview of executed test scenarios and their results.
+          </p>
         </div>
+      </div>
 
-        <div className="grid gap-4 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle></CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DataTable data={tasks} columns={columns} />
-            </CardContent>
-          </Card>
-        </div>
-
+      <div className="grid gap-4 mt-4">
+        <Card>
+          <CardContent className="pt-6">
+            <DataTable data={formattedData} columns={columns} />
+          </CardContent>
+        </Card>
       </div>
     </div>
+
   )
 }

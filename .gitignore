@@ -618,3 +618,4 @@ xcuserdata/
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # End of https://www.toptal.com/developers/gitignore/api/node,python,xcode,visualstudiocode,intellij+all,webstorm+all,macos,windows,linux,pycharm+all
+backend/newman

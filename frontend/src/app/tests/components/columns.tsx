@@ -5,11 +5,11 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/registry/new-york/ui/badge"
 import { Checkbox } from "@/registry/new-york/ui/checkbox"
 
-import { Task } from "../data/schema"
+import { TestCase } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
 
-export const columns: ColumnDef<Task>[] = [
+export const columns: ColumnDef<TestCase>[] = [
   {
     id: "select",
     header: ({ table }) => (
