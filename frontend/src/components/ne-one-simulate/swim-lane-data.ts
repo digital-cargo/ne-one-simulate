@@ -5,33 +5,49 @@ export const initialNodes: Node[] = [
     {
         id: 'development-lane',
         type: 'group',
-        position: { x: 0, y: 0 },
+        position: { x: 80, y: 0 }, // Increased x offset for label space
         data: { label: 'Forwarder' },
         style: {
-            width: 2000,
+            width: 1920,
             height: 200,
             backgroundColor: 'rgba(6, 182, 212, 0.05)',
             border: '2px dashed rgba(6, 182, 212, 0.3)',
+            padding: '20px',
         },
+        // Add label styling for group
+        dragHandle: '.custom-drag-handle',
+        className: 'light',
+        expandParent: true,
+        draggable: false,
+        labelBgPadding: [8, 4],
+        labelBgBorderRadius: 4,
     },
     // Testing Lane Background
     {
         id: 'testing-lane',
         type: 'group',
-        position: { x: 0, y: 250 },
+        position: { x: 80, y: 250 }, // Increased x offset for label space
         data: { label: 'Carrier' },
         style: {
-            width: 2000,
+            width: 1920,
             height: 200,
             backgroundColor: 'rgba(34, 197, 94, 0.05)',
             border: '2px dashed rgba(34, 197, 94, 0.3)',
+            padding: '20px',
         },
+        // Add label styling for group
+        dragHandle: '.custom-drag-handle',
+        className: 'light',
+        expandParent: true,
+        draggable: false,
+        labelBgPadding: [8, 4],
+        labelBgBorderRadius: 4,
     },
     // Development Tasks
     {
         id: 'design',
         data: { label: 'Design' },
-        position: { x: 100, y: 50 },
+        position: { x: 180, y: 50 }, // x increased by 80
         style: {
             width: 180,
             height: 60,
@@ -47,7 +63,7 @@ export const initialNodes: Node[] = [
     {
         id: 'implement',
         data: { label: 'Implementation' },
-        position: { x: 400, y: 50 },
+        position: { x: 480, y: 50 }, // x increased by 80
         style: {
             width: 180,
             height: 60,
@@ -63,7 +79,7 @@ export const initialNodes: Node[] = [
     {
         id: 'review',
         data: { label: 'Code Review' },
-        position: { x: 700, y: 50 },
+        position: { x: 780, y: 50 }, // x increased by 80
         style: {
             width: 180,
             height: 60,
@@ -80,7 +96,7 @@ export const initialNodes: Node[] = [
     {
         id: 'unit',
         data: { label: 'Unit Tests' },
-        position: { x: 100, y: 300 },
+        position: { x: 180, y: 300 }, // x increased by 80
         style: {
             width: 180,
             height: 60,
@@ -96,7 +112,7 @@ export const initialNodes: Node[] = [
     {
         id: 'integration',
         data: { label: 'Integration Tests' },
-        position: { x: 400, y: 300 },
+        position: { x: 480, y: 300 }, // x increased by 80
         style: {
             width: 180,
             height: 60,
@@ -112,7 +128,7 @@ export const initialNodes: Node[] = [
     {
         id: 'bugfix',
         data: { label: 'Bug Fixing' },
-        position: { x: 700, y: 300 },
+        position: { x: 780, y: 300 }, // x increased by 80
         style: {
             width: 180,
             height: 60,

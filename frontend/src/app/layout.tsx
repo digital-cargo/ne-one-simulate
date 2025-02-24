@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NE:ONE simulate",
-  description: "NE:ONE simulate is a test suite to simulate, visualize, and explore ONE Record use cases and workflows"
+  title: "ne:one simulate",
+  description: "ne:one simulate is a test suite to simulate, visualize, and explore ONE Record use cases and workflows"
 };
 
 export default function RootLayout({
