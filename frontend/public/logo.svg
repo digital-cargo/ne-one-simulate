@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="250" viewBox="0 0 500 250">
+  <defs>
+    <!-- Neon Glow Effect -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Neon Gradient Colors -->
+    <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00FFFF"/>
+      <stop offset="50%" stop-color="#FF00FF"/>
+      <stop offset="100%" stop-color="#FFFF00"/>
+    </linearGradient>
+  </defs>
+  <!-- "ne:one" Text with Bold Styling -->
+  <text x="40%" y="40%" text-anchor="middle" dominant-baseline="middle"
+        font-family="Verdana" font-weight="bold" font-size="80"
+        fill="url(#neonGradient)" filter="url(#glow)">
+    ne:one
+  </text>
+  
+  <!-- "simulate" Text with Italic and Letter-spacing + Slight Rotation -->
+  <text x="56%" y="65%" text-anchor="middle" dominant-baseline="middle"
+        font-family="Verdana" font-style="italic" font-size="80" letter-spacing="2"
+        fill="url(#neonGradient)" filter="url(#glow)" transform="rotate(-5, 275, 275)">
+    simulate
+  </text>
+</svg>
