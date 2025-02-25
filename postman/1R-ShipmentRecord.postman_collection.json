@@ -474,6 +474,227 @@
 			]
 		},
 		{
+			"name": "Subscription",
+			"item": [
+				{
+					"name": "Subscribe to ShipmentRecord",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate HTTP Status Code\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Validate response contains the 'Location' header\r",
+									"pm.test(\"Response has 'Location' header\", function () {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"});\r",
+									"\r",
+									"// Extract 'Location' header and store it in an environment variable\r",
+									"let locationHeader = pm.response.headers.get(\"Location\");\r",
+									"pm.collectionVariables.set(\"actionRequest2\", locationHeader);\r",
+									"\r",
+									"// Try both forward slash and backslash\r",
+									"let partsForwardSlash = locationHeader.split('/');\r",
+									"\r",
+									"// Get the last non-empty element\r",
+									"let actionID = '';\r",
+									"\r",
+									"// Try with forward slash first (more common in URLs)\r",
+									"if (partsForwardSlash.length > 0) {\r",
+									"    // Filter out empty strings and get the last element\r",
+									"    let filtered = partsForwardSlash.filter(part => part.trim() !== '');\r",
+									"    if (filtered.length > 0) {\r",
+									"        actionID = filtered[filtered.length - 1];\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"// Set the actionID variable\r",
+									"pm.collectionVariables.set(\"actionID2\", actionID);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"@context\": {\r\n    \"cargo\": \"https://onerecord.iata.org/ns/cargo#\",\r\n    \"api\": \"https://onerecord.iata.org/ns/api#\"\r\n  },\r\n  \"@type\": \"api:Subscription\",\r\n  \"api:hasContentType\": \"application/ld+json\",\r\n  \"api:hasSubscriber\": {\r\n    \"@id\": \"http://localhost:8081/logistics-objects/\"\r\n  },\r\n  \"api:hasTopicType\": {\r\n    \"@id\": \"api:LOGISTICS_OBJECT_TYPE\"\r\n  },\r\n  \"api:subscribeToLogisticsEvents\": {\r\n    \"@type\": \"http://www.w3.org/2001/XMLSchema#boolean\",\r\n    \"@value\": \"true\"\r\n  },\r\n  \"api:hasTopic\": {\r\n    \"@type\": \"http://www.w3.org/2001/XMLSchema#anyURI\",\r\n    \"@value\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/subscriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Action Request Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//NOTE: This test might fail as the action request must be in REQUEST_PENDING state.\r",
+									"//Solution: Set param :actionRquestId to a REQUEST_PENDING action request \r",
+									"//Test response code\r",
+									"pm.test(\"Response Status code is 204\", () => {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json; version=2.0.0-dev",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/ld+json; version=2.0.0-dev",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/action-requests/:actionRequestId?status=REQUEST_ACCEPTED",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"action-requests",
+								":actionRequestId"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "REQUEST_ACCEPTED"
+								}
+							],
+							"variable": [
+								{
+									"key": "actionRequestId",
+									"value": "{{actionID2}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate HTTP Status Code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Get the response body\r",
+									"var responseBody = pm.response.json();\r",
+									"\r",
+									"// Convert the response to a string\r",
+									"var responseBodyString = JSON.stringify(responseBody);\r",
+									"var searchString = \"https://onerecord.iata.org/ns/api#REQUEST_ACCEPTED\";\r",
+									"\r",
+									"// Test that the response contains the expected string\r",
+									"pm.test(\"Response contains REQUEST_ACCEPTED status\", function() {\r",
+									"    pm.expect(responseBodyString.indexOf(searchString)).to.not.equal(-1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{actionRequest2}}",
+							"host": [
+								"{{actionRequest2}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Verification request",
 			"item": [
 				{
@@ -913,6 +1134,14 @@
 		},
 		{
 			"key": "actionID",
+			"value": ""
+		},
+		{
+			"key": "actionRequest2",
+			"value": ""
+		},
+		{
+			"key": "actionID2",
 			"value": ""
 		}
 	]
