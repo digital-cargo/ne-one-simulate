@@ -470,6 +470,36 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Received Notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/internal/notifications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"internal",
+								"notifications"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -514,6 +544,41 @@
 									"\r",
 									"// Set the actionID variable\r",
 									"pm.collectionVariables.set(\"actionID2\", actionID);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"// Get token using Client Credentials grant type",
+									"pm.sendRequest({",
+									"    url: \"http://localhost:8989\" + \"/realms/neone/protocol/openid-connect/token\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Accept\": \"application/json\",",
+									"        \"Content-Type\": \"application/x-www-form-urlencoded\"",
+									"    },",
+									"    body: {",
+									"        mode: \"urlencoded\",",
+									"        urlencoded: [",
+									"            { key: \"grant_type\", value: \"client_credentials\" },",
+									"            { key: \"client_id\", value: \"neone-client\" },",
+									"            { key: \"client_secret\", value: \"lx7ThS5aYggdsMm42BP3wMrVqKm9WpNY\" }",
+									"        ]",
+									"    }",
+									"}, (err, res) => {",
+									"    if (err) {",
+									"        console.log(\"Token request failed:\", err);",
+									"    } else {",
+									"        // Set the access token",
+									"        pm.collectionVariables.set(\"BEARERTOKEN\", res.json().access_token);",
+									"    }",
+									"});",
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
