@@ -35,14 +35,7 @@ export default function TestPage() {
       passed: true,
     };
   });
-
-  console.log(formattedData)
-
   
-
-
-  
-
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="flex-col space-y-6 p-8">

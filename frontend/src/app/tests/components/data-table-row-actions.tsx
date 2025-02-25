@@ -18,7 +18,7 @@ export function DataTableRowActions<TData>({
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => router.push(`/tests/${row.id}`)}
+      onClick={() => router.push(`/tests/${row.original.id}`)}
       className="h-8 w-8 p-0"
     >
       <Eye className="h-4 w-4" />
