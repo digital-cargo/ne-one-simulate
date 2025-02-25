@@ -1,0 +1,20 @@
+[
+  {
+    "id": "TEST-1",
+    "title": "Update weight of Piece",
+    "result": "9/9",
+    "passed": true
+  },
+  {
+    "id": "TEST-2",
+    "title": "Verify goods description of Piece",
+    "result": "4/9",
+    "passed": false
+  },
+  {
+    "id": "TEST-3",
+    "title": "Link Booking to ShipmentRecord",
+    "result": "9/9",
+    "passed": true
+  }
+]

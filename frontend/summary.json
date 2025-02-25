@@ -1,0 +1,1413 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "0af2ae47-7058-47ff-b4ea-d34ecdc02392",
+      "exporter_id": "28113023"
+    },
+    "item": [
+      {
+        "id": "9fb9136b-ce73-43fe-8a6b-8f6ef4b3e157",
+        "name": "Update Route in ShipmentRecord",
+        "item": [
+          {
+            "id": "29f6398d-2dec-4eb7-ba74-cdf1b031f4e8",
+            "name": "Create Waybill",
+            "request": {
+              "url": {
+                "protocol": "http",
+                "port": "8080",
+                "path": [
+                  "logistics-objects"
+                ],
+                "host": [
+                  "localhost"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/ld+json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"@context\": {\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\"\n    },\n    \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\",\n    \"@type\": \"cargo:Waybill\",\n    \"cargo:waybillType\": {\n        \"@id\": \"https://onerecord.iata.org/ns/cargo#MASTER\"\n    },\n    \"cargo:waybillPrefix\": \"{{mawb-prefix}}\",\n    \"cargo:waybillNumber\": \"{{mawb-number}}\"    \n}",
+                "options": {
+                  "raw": {
+                    "language": "json"
+                  }
+                }
+              },
+              "auth": {
+                "type": "bearer",
+                "bearer": [
+                  {
+                    "type": "string",
+                    "value": "{{BEARERTOKEN}}",
+                    "key": "token"
+                  }
+                ]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "prerequest",
+                "script": {
+                  "id": "f96b8d5b-eea3-4a60-8a7b-473c1f625fbf",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "// Define a function to generate a random 8-digit number",
+                    "function generateRandomNumber() {",
+                    "    return Math.floor(10000000 + Math.random() * 90000000).toString();",
+                    "}",
+                    "",
+                    "// Set random MAWB number",
+                    "pm.collectionVariables.set(\"mawb-prefix\", \"020\");",
+                    "pm.collectionVariables.set(\"mawb-number\", generateRandomNumber());",
+                    "",
+                    "// Get token using Client Credentials grant type",
+                    "pm.sendRequest({",
+                    "    url: \"http://localhost:8989\" + \"/realms/neone/protocol/openid-connect/token\",",
+                    "    method: \"POST\",",
+                    "    header: {",
+                    "        \"Accept\": \"application/json\",",
+                    "        \"Content-Type\": \"application/x-www-form-urlencoded\"",
+                    "    },",
+                    "    body: {",
+                    "        mode: \"urlencoded\",",
+                    "        urlencoded: [",
+                    "            { key: \"grant_type\", value: \"client_credentials\" },",
+                    "            { key: \"client_id\", value: \"neone-client\" },",
+                    "            { key: \"client_secret\", value: \"lx7ThS5aYggdsMm42BP3wMrVqKm9WpNY\" }",
+                    "        ]",
+                    "    }",
+                    "}, (err, res) => {",
+                    "    if (err) {",
+                    "        console.log(\"Token request failed:\", err);",
+                    "    } else {",
+                    "        // Set the access token",
+                    "        pm.collectionVariables.set(\"BEARERTOKEN\", res.json().access_token);",
+                    "    }",
+                    "});",
+                    "",
+                    ""
+                  ],
+                  "_lastExecutionId": "43eccdeb-2b7e-4e74-98d7-860d31de52c2"
+                }
+              },
+              {
+                "listen": "test",
+                "script": {
+                  "id": "51aab980-77cc-4a68-87b9-88ca0c5a523d",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "// Validate HTTP Status Code",
+                    "pm.test(\"Status code is 201\", function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "// Validate response contains the 'Location' header",
+                    "pm.test(\"Response has 'Location' header\", function () {",
+                    "    pm.response.to.have.header(\"Location\");",
+                    "});",
+                    "",
+                    "// Extract 'Location' header and store it in an environment variable",
+                    "let locationHeader = pm.response.headers.get(\"Location\");",
+                    "",
+                    "if (locationHeader) {",
+                    "    pm.collectionVariables.set(\"shipmentRecord\", locationHeader);",
+                    "}",
+                    ""
+                  ],
+                  "_lastExecutionId": "90871191-73c0-4f7f-9143-4ca2665acf21"
+                }
+              }
+            ]
+          },
+          {
+            "id": "61f1e5b3-7253-4de8-beb4-af27aa56335c",
+            "name": "Get Waybill",
+            "request": {
+              "url": {
+                "protocol": "http",
+                "port": "8080",
+                "path": [
+                  "logistics-objects",
+                  "waybill-{{mawb-prefix}}-{{mawb-number}}"
+                ],
+                "host": [
+                  "localhost"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/ld+json"
+                }
+              ],
+              "method": "GET",
+              "auth": {
+                "type": "bearer",
+                "bearer": [
+                  {
+                    "type": "string",
+                    "value": "{{BEARERTOKEN}}",
+                    "key": "token"
+                  }
+                ]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "prerequest",
+                "script": {
+                  "id": "f9a1c227-ab26-4dcb-ae1c-3cd71c315ec6",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    ""
+                  ],
+                  "_lastExecutionId": "271b7496-64e5-452f-a9b5-a02dc26f9f9e"
+                }
+              },
+              {
+                "listen": "test",
+                "script": {
+                  "id": "3d277317-0eb2-4260-9003-b9ff78b5f347",
+                  "type": "text/javascript",
+                  "packages": {},
+                  "exec": [
+                    "// Validate HTTP Status Code",
+                    "pm.test(\"Waybill exists\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    ""
+                  ],
+                  "_lastExecutionId": "11504f79-e7bc-4f0e-8aa8-ffa7355babd5"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      }
+    ],
+    "auth": {
+      "type": "oauth2",
+      "oauth2": [
+        {
+          "type": "string",
+          "value": "ne-one-simulate-token",
+          "key": "tokenName"
+        },
+        {
+          "type": "string",
+          "value": "header",
+          "key": "addTokenTo"
+        }
+      ]
+    },
+    "event": [
+      {
+        "listen": "prerequest",
+        "script": {
+          "id": "622e4a2c-a8eb-44f6-9863-2b64b2f4703f",
+          "type": "text/javascript",
+          "packages": {},
+          "exec": [
+            ""
+          ],
+          "_lastExecutionId": "27320c58-87b0-4f73-aa83-c749bfa9c084"
+        }
+      },
+      {
+        "listen": "test",
+        "script": {
+          "id": "d13bfea3-4d6d-4aca-b988-2b9e20928b1a",
+          "type": "text/javascript",
+          "packages": {},
+          "exec": [
+            ""
+          ],
+          "_lastExecutionId": "fae6f74f-165d-48fc-8c85-9e7c353d27b3"
+        }
+      }
+    ],
+    "variable": [
+      {
+        "type": "any",
+        "value": "",
+        "key": "mawb-prefix"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "mawb-number"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "BEARERTOKEN"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "shipmentRecord"
+      }
+    ],
+    "info": {
+      "_postman_id": "0af2ae47-7058-47ff-b4ea-d34ecdc02392",
+      "name": "1R-ShipmentRecord",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    }
+  },
+  "environment": {
+    "id": "f1f30062-aea3-456c-bfbf-28401952f4f0",
+    "values": []
+  },
+  "globals": {
+    "id": "0f89ed17-2aee-4248-97d9-eda9f7663d76",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 2,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 2,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 3,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 2,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 3,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 4,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 4,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 61.666666666666664,
+      "responseMin": 24,
+      "responseMax": 112,
+      "responseSd": 37.02551672683163,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1740389546302,
+      "completed": 1740389546541
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 2,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "034f75a5-b9cc-4048-bce4-7ac1d4e5d7f6",
+          "httpRequestId": "4807ceef-0b0d-4922-a916-be3a7f597160"
+        },
+        "item": {
+          "id": "29f6398d-2dec-4eb7-ba74-cdf1b031f4e8",
+          "name": "Create Waybill",
+          "request": {
+            "url": {
+              "protocol": "http",
+              "port": "8080",
+              "path": [
+                "logistics-objects"
+              ],
+              "host": [
+                "localhost"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/ld+json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"@context\": {\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\"\n    },\n    \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\",\n    \"@type\": \"cargo:Waybill\",\n    \"cargo:waybillType\": {\n        \"@id\": \"https://onerecord.iata.org/ns/cargo#MASTER\"\n    },\n    \"cargo:waybillPrefix\": \"{{mawb-prefix}}\",\n    \"cargo:waybillNumber\": \"{{mawb-number}}\"    \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{BEARERTOKEN}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "f96b8d5b-eea3-4a60-8a7b-473c1f625fbf",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "// Define a function to generate a random 8-digit number",
+                  "function generateRandomNumber() {",
+                  "    return Math.floor(10000000 + Math.random() * 90000000).toString();",
+                  "}",
+                  "",
+                  "// Set random MAWB number",
+                  "pm.collectionVariables.set(\"mawb-prefix\", \"020\");",
+                  "pm.collectionVariables.set(\"mawb-number\", generateRandomNumber());",
+                  "",
+                  "// Get token using Client Credentials grant type",
+                  "pm.sendRequest({",
+                  "    url: \"http://localhost:8989\" + \"/realms/neone/protocol/openid-connect/token\",",
+                  "    method: \"POST\",",
+                  "    header: {",
+                  "        \"Accept\": \"application/json\",",
+                  "        \"Content-Type\": \"application/x-www-form-urlencoded\"",
+                  "    },",
+                  "    body: {",
+                  "        mode: \"urlencoded\",",
+                  "        urlencoded: [",
+                  "            { key: \"grant_type\", value: \"client_credentials\" },",
+                  "            { key: \"client_id\", value: \"neone-client\" },",
+                  "            { key: \"client_secret\", value: \"lx7ThS5aYggdsMm42BP3wMrVqKm9WpNY\" }",
+                  "        ]",
+                  "    }",
+                  "}, (err, res) => {",
+                  "    if (err) {",
+                  "        console.log(\"Token request failed:\", err);",
+                  "    } else {",
+                  "        // Set the access token",
+                  "        pm.collectionVariables.set(\"BEARERTOKEN\", res.json().access_token);",
+                  "    }",
+                  "});",
+                  "",
+                  ""
+                ],
+                "_lastExecutionId": "43eccdeb-2b7e-4e74-98d7-860d31de52c2"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "51aab980-77cc-4a68-87b9-88ca0c5a523d",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "// Validate HTTP Status Code",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "// Validate response contains the 'Location' header",
+                  "pm.test(\"Response has 'Location' header\", function () {",
+                  "    pm.response.to.have.header(\"Location\");",
+                  "});",
+                  "",
+                  "// Extract 'Location' header and store it in an environment variable",
+                  "let locationHeader = pm.response.headers.get(\"Location\");",
+                  "",
+                  "if (locationHeader) {",
+                  "    pm.collectionVariables.set(\"shipmentRecord\", locationHeader);",
+                  "}",
+                  ""
+                ],
+                "_lastExecutionId": "90871191-73c0-4f7f-9143-4ca2665acf21"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "logistics-objects"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/ld+json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGYzdaSHZUNGozbldNenZkX2xuYUsySGZWWnUtYWtBLTB0TGMwLVgwc1BZIn0.eyJleHAiOjE3NDA0MjU1NDYsImlhdCI6MTc0MDM4OTU0NiwianRpIjoiYTE3MzE5NTgtYmZkMi00N2JhLTkwOWEtNTRkMTk4MzdjNmNjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4OTg5L3JlYWxtcy9uZW9uZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwYWU4OThmMy1kMjQ4LTRlYWMtODY4MS1iMDM4MWM4MmQ2YzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZW9uZS1jbGllbnQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1uZW9uZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiY2xpZW50SG9zdCI6IjE5Mi4xNjguNjUuMSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibG9naXN0aWNzX2FnZW50X3VyaSI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9sb2dpc3RpY3Mtb2JqZWN0cy9fZGF0YS1ob2xkZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtbmVvbmUtY2xpZW50IiwiY2xpZW50QWRkcmVzcyI6IjE5Mi4xNjguNjUuMSIsImNsaWVudF9pZCI6Im5lb25lLWNsaWVudCJ9.BOth2IWuCVIRX4bqgwi92cX0XqHHjudjiYE_HSBsSqQ2jqN57Djg1zjW5rdF2pb_pKoLy5v43TuUt7UQ5Qs5ST0xtLiS8yy2ztMZwfmRRv9WXWOHDNjHaz1eao_QXTP5vF2CkWKKstvnB1-xBmRo5sPD58p0GARkZlvHGu4ZQNOPYSJxL8lWvUwUbtGUH_UPiFL7yRtwaF3fvm2bc1cm6S67DoK76SxAnTWZPBZTE35g3YagNSCMiFGi1hBZM3EhB3c0fChseywVxmpezweL3Omjq_sT5w3uZiTM1mRDBSH7UmpXqy2FeF__9nXiB1HEsPxB0sUVoRjs-B90BPQ_HQ",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "43198bd1-7242-406e-b622-c73d42a70196",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "359",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"@context\": {\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\"\n    },\n    \"@id\": \"http://localhost:8080/logistics-objects/waybill-020-45023575\",\n    \"@type\": \"cargo:Waybill\",\n    \"cargo:waybillType\": {\n        \"@id\": \"https://onerecord.iata.org/ns/cargo#MASTER\"\n    },\n    \"cargo:waybillPrefix\": \"020\",\n    \"cargo:waybillNumber\": \"45023575\"    \n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGYzdaSHZUNGozbldNenZkX2xuYUsySGZWWnUtYWtBLTB0TGMwLVgwc1BZIn0.eyJleHAiOjE3NDA0MjU1NDYsImlhdCI6MTc0MDM4OTU0NiwianRpIjoiYTE3MzE5NTgtYmZkMi00N2JhLTkwOWEtNTRkMTk4MzdjNmNjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4OTg5L3JlYWxtcy9uZW9uZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwYWU4OThmMy1kMjQ4LTRlYWMtODY4MS1iMDM4MWM4MmQ2YzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZW9uZS1jbGllbnQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1uZW9uZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiY2xpZW50SG9zdCI6IjE5Mi4xNjguNjUuMSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibG9naXN0aWNzX2FnZW50X3VyaSI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9sb2dpc3RpY3Mtb2JqZWN0cy9fZGF0YS1ob2xkZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtbmVvbmUtY2xpZW50IiwiY2xpZW50QWRkcmVzcyI6IjE5Mi4xNjguNjUuMSIsImNsaWVudF9pZCI6Im5lb25lLWNsaWVudCJ9.BOth2IWuCVIRX4bqgwi92cX0XqHHjudjiYE_HSBsSqQ2jqN57Djg1zjW5rdF2pb_pKoLy5v43TuUt7UQ5Qs5ST0xtLiS8yy2ztMZwfmRRv9WXWOHDNjHaz1eao_QXTP5vF2CkWKKstvnB1-xBmRo5sPD58p0GARkZlvHGu4ZQNOPYSJxL8lWvUwUbtGUH_UPiFL7yRtwaF3fvm2bc1cm6S67DoK76SxAnTWZPBZTE35g3YagNSCMiFGi1hBZM3EhB3c0fChseywVxmpezweL3Omjq_sT5w3uZiTM1mRDBSH7UmpXqy2FeF__9nXiB1HEsPxB0sUVoRjs-B90BPQ_HQ",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "7a7dcd18-8dc5-4302-a787-61395b2e8dcb",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Location",
+              "value": "http://localhost:8080/logistics-objects/waybill-020-45023575"
+            },
+            {
+              "key": "Type",
+              "value": "https://onerecord.iata.org/ns/cargo#Waybill"
+            },
+            {
+              "key": "content-length",
+              "value": "0"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": []
+          },
+          "cookie": [],
+          "responseTime": 49,
+          "responseSize": 0
+        },
+        "id": "29f6398d-2dec-4eb7-ba74-cdf1b031f4e8",
+        "assertions": [
+          {
+            "assertion": "Status code is 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Response has 'Location' header",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 2,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "034f75a5-b9cc-4048-bce4-7ac1d4e5d7f6",
+          "httpRequestId": "4807ceef-0b0d-4922-a916-be3a7f597160"
+        },
+        "item": {
+          "id": "29f6398d-2dec-4eb7-ba74-cdf1b031f4e8",
+          "name": "Create Waybill",
+          "request": {
+            "url": {
+              "protocol": "http",
+              "port": "8080",
+              "path": [
+                "logistics-objects"
+              ],
+              "host": [
+                "localhost"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/ld+json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"@context\": {\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\"\n    },\n    \"@id\": \"http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}\",\n    \"@type\": \"cargo:Waybill\",\n    \"cargo:waybillType\": {\n        \"@id\": \"https://onerecord.iata.org/ns/cargo#MASTER\"\n    },\n    \"cargo:waybillPrefix\": \"{{mawb-prefix}}\",\n    \"cargo:waybillNumber\": \"{{mawb-number}}\"    \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{BEARERTOKEN}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "f96b8d5b-eea3-4a60-8a7b-473c1f625fbf",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "// Define a function to generate a random 8-digit number",
+                  "function generateRandomNumber() {",
+                  "    return Math.floor(10000000 + Math.random() * 90000000).toString();",
+                  "}",
+                  "",
+                  "// Set random MAWB number",
+                  "pm.collectionVariables.set(\"mawb-prefix\", \"020\");",
+                  "pm.collectionVariables.set(\"mawb-number\", generateRandomNumber());",
+                  "",
+                  "// Get token using Client Credentials grant type",
+                  "pm.sendRequest({",
+                  "    url: \"http://localhost:8989\" + \"/realms/neone/protocol/openid-connect/token\",",
+                  "    method: \"POST\",",
+                  "    header: {",
+                  "        \"Accept\": \"application/json\",",
+                  "        \"Content-Type\": \"application/x-www-form-urlencoded\"",
+                  "    },",
+                  "    body: {",
+                  "        mode: \"urlencoded\",",
+                  "        urlencoded: [",
+                  "            { key: \"grant_type\", value: \"client_credentials\" },",
+                  "            { key: \"client_id\", value: \"neone-client\" },",
+                  "            { key: \"client_secret\", value: \"lx7ThS5aYggdsMm42BP3wMrVqKm9WpNY\" }",
+                  "        ]",
+                  "    }",
+                  "}, (err, res) => {",
+                  "    if (err) {",
+                  "        console.log(\"Token request failed:\", err);",
+                  "    } else {",
+                  "        // Set the access token",
+                  "        pm.collectionVariables.set(\"BEARERTOKEN\", res.json().access_token);",
+                  "    }",
+                  "});",
+                  "",
+                  ""
+                ],
+                "_lastExecutionId": "43eccdeb-2b7e-4e74-98d7-860d31de52c2"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "51aab980-77cc-4a68-87b9-88ca0c5a523d",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "// Validate HTTP Status Code",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "// Validate response contains the 'Location' header",
+                  "pm.test(\"Response has 'Location' header\", function () {",
+                  "    pm.response.to.have.header(\"Location\");",
+                  "});",
+                  "",
+                  "// Extract 'Location' header and store it in an environment variable",
+                  "let locationHeader = pm.response.headers.get(\"Location\");",
+                  "",
+                  "if (locationHeader) {",
+                  "    pm.collectionVariables.set(\"shipmentRecord\", locationHeader);",
+                  "}",
+                  ""
+                ],
+                "_lastExecutionId": "90871191-73c0-4f7f-9143-4ca2665acf21"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "logistics-objects"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/ld+json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGYzdaSHZUNGozbldNenZkX2xuYUsySGZWWnUtYWtBLTB0TGMwLVgwc1BZIn0.eyJleHAiOjE3NDA0MjU1NDYsImlhdCI6MTc0MDM4OTU0NiwianRpIjoiYTE3MzE5NTgtYmZkMi00N2JhLTkwOWEtNTRkMTk4MzdjNmNjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4OTg5L3JlYWxtcy9uZW9uZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwYWU4OThmMy1kMjQ4LTRlYWMtODY4MS1iMDM4MWM4MmQ2YzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZW9uZS1jbGllbnQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1uZW9uZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiY2xpZW50SG9zdCI6IjE5Mi4xNjguNjUuMSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibG9naXN0aWNzX2FnZW50X3VyaSI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9sb2dpc3RpY3Mtb2JqZWN0cy9fZGF0YS1ob2xkZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtbmVvbmUtY2xpZW50IiwiY2xpZW50QWRkcmVzcyI6IjE5Mi4xNjguNjUuMSIsImNsaWVudF9pZCI6Im5lb25lLWNsaWVudCJ9.BOth2IWuCVIRX4bqgwi92cX0XqHHjudjiYE_HSBsSqQ2jqN57Djg1zjW5rdF2pb_pKoLy5v43TuUt7UQ5Qs5ST0xtLiS8yy2ztMZwfmRRv9WXWOHDNjHaz1eao_QXTP5vF2CkWKKstvnB1-xBmRo5sPD58p0GARkZlvHGu4ZQNOPYSJxL8lWvUwUbtGUH_UPiFL7yRtwaF3fvm2bc1cm6S67DoK76SxAnTWZPBZTE35g3YagNSCMiFGi1hBZM3EhB3c0fChseywVxmpezweL3Omjq_sT5w3uZiTM1mRDBSH7UmpXqy2FeF__9nXiB1HEsPxB0sUVoRjs-B90BPQ_HQ",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "43198bd1-7242-406e-b622-c73d42a70196",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "359",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"@context\": {\n        \"cargo\": \"https://onerecord.iata.org/ns/cargo#\"\n    },\n    \"@id\": \"http://localhost:8080/logistics-objects/waybill-020-45023575\",\n    \"@type\": \"cargo:Waybill\",\n    \"cargo:waybillType\": {\n        \"@id\": \"https://onerecord.iata.org/ns/cargo#MASTER\"\n    },\n    \"cargo:waybillPrefix\": \"020\",\n    \"cargo:waybillNumber\": \"45023575\"    \n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          },
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGYzdaSHZUNGozbldNenZkX2xuYUsySGZWWnUtYWtBLTB0TGMwLVgwc1BZIn0.eyJleHAiOjE3NDA0MjU1NDYsImlhdCI6MTc0MDM4OTU0NiwianRpIjoiYTE3MzE5NTgtYmZkMi00N2JhLTkwOWEtNTRkMTk4MzdjNmNjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4OTg5L3JlYWxtcy9uZW9uZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwYWU4OThmMy1kMjQ4LTRlYWMtODY4MS1iMDM4MWM4MmQ2YzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZW9uZS1jbGllbnQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1uZW9uZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiY2xpZW50SG9zdCI6IjE5Mi4xNjguNjUuMSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibG9naXN0aWNzX2FnZW50X3VyaSI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9sb2dpc3RpY3Mtb2JqZWN0cy9fZGF0YS1ob2xkZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtbmVvbmUtY2xpZW50IiwiY2xpZW50QWRkcmVzcyI6IjE5Mi4xNjguNjUuMSIsImNsaWVudF9pZCI6Im5lb25lLWNsaWVudCJ9.BOth2IWuCVIRX4bqgwi92cX0XqHHjudjiYE_HSBsSqQ2jqN57Djg1zjW5rdF2pb_pKoLy5v43TuUt7UQ5Qs5ST0xtLiS8yy2ztMZwfmRRv9WXWOHDNjHaz1eao_QXTP5vF2CkWKKstvnB1-xBmRo5sPD58p0GARkZlvHGu4ZQNOPYSJxL8lWvUwUbtGUH_UPiFL7yRtwaF3fvm2bc1cm6S67DoK76SxAnTWZPBZTE35g3YagNSCMiFGi1hBZM3EhB3c0fChseywVxmpezweL3Omjq_sT5w3uZiTM1mRDBSH7UmpXqy2FeF__9nXiB1HEsPxB0sUVoRjs-B90BPQ_HQ",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "7a7dcd18-8dc5-4302-a787-61395b2e8dcb",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Location",
+              "value": "http://localhost:8080/logistics-objects/waybill-020-45023575"
+            },
+            {
+              "key": "Type",
+              "value": "https://onerecord.iata.org/ns/cargo#Waybill"
+            },
+            {
+              "key": "content-length",
+              "value": "0"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": []
+          },
+          "cookie": [],
+          "responseTime": 49,
+          "responseSize": 0
+        },
+        "id": "29f6398d-2dec-4eb7-ba74-cdf1b031f4e8",
+        "assertions": [
+          {
+            "assertion": "Status code is 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Response has 'Location' header",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "ac7e8e05-1394-4a33-9b22-970d0dba894c",
+          "length": 2,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "73efa923-bded-4986-9344-58ec538539bb"
+        },
+        "item": {
+          "id": "61f1e5b3-7253-4de8-beb4-af27aa56335c",
+          "name": "Get Waybill",
+          "request": {
+            "url": {
+              "protocol": "http",
+              "port": "8080",
+              "path": [
+                "logistics-objects",
+                "waybill-{{mawb-prefix}}-{{mawb-number}}"
+              ],
+              "host": [
+                "localhost"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/ld+json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "type": "string",
+                  "value": "{{BEARERTOKEN}}",
+                  "key": "token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "f9a1c227-ab26-4dcb-ae1c-3cd71c315ec6",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  ""
+                ],
+                "_lastExecutionId": "271b7496-64e5-452f-a9b5-a02dc26f9f9e"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "3d277317-0eb2-4260-9003-b9ff78b5f347",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                  "// Validate HTTP Status Code",
+                  "pm.test(\"Waybill exists\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  ""
+                ],
+                "_lastExecutionId": "11504f79-e7bc-4f0e-8aa8-ffa7355babd5"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "logistics-objects",
+              "waybill-020-45023575"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/ld+json"
+            },
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGYzdaSHZUNGozbldNenZkX2xuYUsySGZWWnUtYWtBLTB0TGMwLVgwc1BZIn0.eyJleHAiOjE3NDA0MjU1NDYsImlhdCI6MTc0MDM4OTU0NiwianRpIjoiYTE3MzE5NTgtYmZkMi00N2JhLTkwOWEtNTRkMTk4MzdjNmNjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4OTg5L3JlYWxtcy9uZW9uZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwYWU4OThmMy1kMjQ4LTRlYWMtODY4MS1iMDM4MWM4MmQ2YzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZW9uZS1jbGllbnQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1uZW9uZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiY2xpZW50SG9zdCI6IjE5Mi4xNjguNjUuMSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibG9naXN0aWNzX2FnZW50X3VyaSI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9sb2dpc3RpY3Mtb2JqZWN0cy9fZGF0YS1ob2xkZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtbmVvbmUtY2xpZW50IiwiY2xpZW50QWRkcmVzcyI6IjE5Mi4xNjguNjUuMSIsImNsaWVudF9pZCI6Im5lb25lLWNsaWVudCJ9.BOth2IWuCVIRX4bqgwi92cX0XqHHjudjiYE_HSBsSqQ2jqN57Djg1zjW5rdF2pb_pKoLy5v43TuUt7UQ5Qs5ST0xtLiS8yy2ztMZwfmRRv9WXWOHDNjHaz1eao_QXTP5vF2CkWKKstvnB1-xBmRo5sPD58p0GARkZlvHGu4ZQNOPYSJxL8lWvUwUbtGUH_UPiFL7yRtwaF3fvm2bc1cm6S67DoK76SxAnTWZPBZTE35g3YagNSCMiFGi1hBZM3EhB3c0fChseywVxmpezweL3Omjq_sT5w3uZiTM1mRDBSH7UmpXqy2FeF__9nXiB1HEsPxB0sUVoRjs-B90BPQ_HQ",
+              "system": true
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "59301adc-50af-4f4b-b840-97eea15e6924",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "type": "string",
+                "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGYzdaSHZUNGozbldNenZkX2xuYUsySGZWWnUtYWtBLTB0TGMwLVgwc1BZIn0.eyJleHAiOjE3NDA0MjU1NDYsImlhdCI6MTc0MDM4OTU0NiwianRpIjoiYTE3MzE5NTgtYmZkMi00N2JhLTkwOWEtNTRkMTk4MzdjNmNjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4OTg5L3JlYWxtcy9uZW9uZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwYWU4OThmMy1kMjQ4LTRlYWMtODY4MS1iMDM4MWM4MmQ2YzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZW9uZS1jbGllbnQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1uZW9uZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiY2xpZW50SG9zdCI6IjE5Mi4xNjguNjUuMSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibG9naXN0aWNzX2FnZW50X3VyaSI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9sb2dpc3RpY3Mtb2JqZWN0cy9fZGF0YS1ob2xkZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtbmVvbmUtY2xpZW50IiwiY2xpZW50QWRkcmVzcyI6IjE5Mi4xNjguNjUuMSIsImNsaWVudF9pZCI6Im5lb25lLWNsaWVudCJ9.BOth2IWuCVIRX4bqgwi92cX0XqHHjudjiYE_HSBsSqQ2jqN57Djg1zjW5rdF2pb_pKoLy5v43TuUt7UQ5Qs5ST0xtLiS8yy2ztMZwfmRRv9WXWOHDNjHaz1eao_QXTP5vF2CkWKKstvnB1-xBmRo5sPD58p0GARkZlvHGu4ZQNOPYSJxL8lWvUwUbtGUH_UPiFL7yRtwaF3fvm2bc1cm6S67DoK76SxAnTWZPBZTE35g3YagNSCMiFGi1hBZM3EhB3c0fChseywVxmpezweL3Omjq_sT5w3uZiTM1mRDBSH7UmpXqy2FeF__9nXiB1HEsPxB0sUVoRjs-B90BPQ_HQ",
+                "key": "token"
+              }
+            ]
+          }
+        },
+        "response": {
+          "id": "cb832681-2036-4cb0-91a4-bdde64debd42",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "transfer-encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Content-Language",
+              "value": "en-US"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/ld+json;charset=UTF-8"
+            },
+            {
+              "key": "Last-Modified",
+              "value": "2025-02-24T09:32:26.369169543Z"
+            },
+            {
+              "key": "Latest-Revision",
+              "value": "1"
+            },
+            {
+              "key": "Location",
+              "value": "http://localhost:8080/logistics-objects/waybill-020-45023575"
+            },
+            {
+              "key": "Revision",
+              "value": "1"
+            },
+            {
+              "key": "Type",
+              "value": "https://onerecord.iata.org/ns/cargo#LogisticsObject"
+            },
+            {
+              "key": "Type",
+              "value": "https://onerecord.iata.org/ns/cargo#Waybill"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              10,
+              32,
+              32,
+              34,
+              64,
+              105,
+              100,
+              34,
+              32,
+              58,
+              32,
+              34,
+              104,
+              116,
+              116,
+              112,
+              58,
+              47,
+              47,
+              108,
+              111,
+              99,
+              97,
+              108,
+              104,
+              111,
+              115,
+              116,
+              58,
+              56,
+              48,
+              56,
+              48,
+              47,
+              108,
+              111,
+              103,
+              105,
+              115,
+              116,
+              105,
+              99,
+              115,
+              45,
+              111,
+              98,
+              106,
+              101,
+              99,
+              116,
+              115,
+              47,
+              119,
+              97,
+              121,
+              98,
+              105,
+              108,
+              108,
+              45,
+              48,
+              50,
+              48,
+              45,
+              52,
+              53,
+              48,
+              50,
+              51,
+              53,
+              55,
+              53,
+              34,
+              44,
+              10,
+              32,
+              32,
+              34,
+              64,
+              116,
+              121,
+              112,
+              101,
+              34,
+              32,
+              58,
+              32,
+              91,
+              32,
+              34,
+              76,
+              111,
+              103,
+              105,
+              115,
+              116,
+              105,
+              99,
+              115,
+              79,
+              98,
+              106,
+              101,
+              99,
+              116,
+              34,
+              44,
+              32,
+              34,
+              87,
+              97,
+              121,
+              98,
+              105,
+              108,
+              108,
+              34,
+              32,
+              93,
+              44,
+              10,
+              32,
+              32,
+              34,
+              119,
+              97,
+              121,
+              98,
+              105,
+              108,
+              108,
+              78,
+              117,
+              109,
+              98,
+              101,
+              114,
+              34,
+              32,
+              58,
+              32,
+              34,
+              52,
+              53,
+              48,
+              50,
+              51,
+              53,
+              55,
+              53,
+              34,
+              44,
+              10,
+              32,
+              32,
+              34,
+              119,
+              97,
+              121,
+              98,
+              105,
+              108,
+              108,
+              80,
+              114,
+              101,
+              102,
+              105,
+              120,
+              34,
+              32,
+              58,
+              32,
+              34,
+              48,
+              50,
+              48,
+              34,
+              44,
+              10,
+              32,
+              32,
+              34,
+              119,
+              97,
+              121,
+              98,
+              105,
+              108,
+              108,
+              84,
+              121,
+              112,
+              101,
+              34,
+              32,
+              58,
+              32,
+              123,
+              10,
+              32,
+              32,
+              32,
+              32,
+              34,
+              64,
+              105,
+              100,
+              34,
+              32,
+              58,
+              32,
+              34,
+              104,
+              116,
+              116,
+              112,
+              115,
+              58,
+              47,
+              47,
+              111,
+              110,
+              101,
+              114,
+              101,
+              99,
+              111,
+              114,
+              100,
+              46,
+              105,
+              97,
+              116,
+              97,
+              46,
+              111,
+              114,
+              103,
+              47,
+              110,
+              115,
+              47,
+              99,
+              97,
+              114,
+              103,
+              111,
+              35,
+              77,
+              65,
+              83,
+              84,
+              69,
+              82,
+              34,
+              10,
+              32,
+              32,
+              125,
+              44,
+              10,
+              32,
+              32,
+              34,
+              64,
+              99,
+              111,
+              110,
+              116,
+              101,
+              120,
+              116,
+              34,
+              32,
+              58,
+              32,
+              123,
+              10,
+              32,
+              32,
+              32,
+              32,
+              34,
+              64,
+              118,
+              111,
+              99,
+              97,
+              98,
+              34,
+              32,
+              58,
+              32,
+              34,
+              104,
+              116,
+              116,
+              112,
+              115,
+              58,
+              47,
+              47,
+              111,
+              110,
+              101,
+              114,
+              101,
+              99,
+              111,
+              114,
+              100,
+              46,
+              105,
+              97,
+              116,
+              97,
+              46,
+              111,
+              114,
+              103,
+              47,
+              110,
+              115,
+              47,
+              99,
+              97,
+              114,
+              103,
+              111,
+              35,
+              34,
+              10,
+              32,
+              32,
+              125,
+              10,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 112,
+          "responseSize": 339
+        },
+        "id": "61f1e5b3-7253-4de8-beb4-af27aa56335c",
+        "assertions": [
+          {
+            "assertion": "Waybill exists",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 1855
+    },
+    "failures": [],
+    "error": null
+  }
+}
