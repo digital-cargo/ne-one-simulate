@@ -4,7 +4,7 @@
 		"name": "1R-ShipmentRecord",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "38369508",
-		"_collection_link": "https://one-record-1456.postman.co/workspace/f7492b3a-9cd2-47b9-8592-6ba740e9355a/collection/38369508-02b58a5c-760f-45b3-a8a7-2903dc2b9966?action=share&source=collection_link&creator=38369508"
+		"_collection_link": "https://one-record-1456.postman.co/workspace/ONE-Record~f7492b3a-9cd2-47b9-8592-6ba740e9355a/collection/38369508-02b58a5c-760f-45b3-a8a7-2903dc2b9966?action=share&source=collection_link&creator=38369508"
 	},
 	"item": [
 		{
@@ -223,7 +223,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{BEARERTOKEN}}",
+									"value": "{{CARRIERBEARERTOKEN}}",
 									"type": "string"
 								}
 							]
@@ -317,7 +317,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{BEARERTOKEN}}",
+									"value": "{{CARRIERBEARERTOKEN}}",
 									"type": "string"
 								}
 							]
@@ -525,6 +525,91 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get ShipmentRecord Notification",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validate HTTP Status Code",
+									"pm.test(\"ShipmentRecord exists\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Validate 'Revision' header is a positive numerical value",
+									"pm.test(\"Revision header is a positive numerical value\", function () {",
+									"    const revisionHeader = pm.response.headers.get('Revision');",
+									"    pm.expect(revisionHeader).to.be.a('string');",
+									"    const revisionNumber = Number(revisionHeader);",
+									"    pm.expect(revisionNumber).to.be.a('number');",
+									"    pm.expect(revisionNumber).to.be.above(0);",
+									"});",
+									"",
+									"// Validate 'Latest-Revision' header is a positive numerical value",
+									"pm.test(\"Latest-Revision header is a non-negative numerical value\", function () {",
+									"    const latestRevisionHeader = pm.response.headers.get('Latest-Revision');",
+									"    pm.expect(latestRevisionHeader).to.be.a('string');",
+									"    const latestRevisionNumber = Number(latestRevisionHeader);",
+									"    pm.expect(latestRevisionNumber).to.be.a('number');",
+									"    pm.expect(latestRevisionNumber).to.be.at.least(0);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{CARRIERBEARERTOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/ld+json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/logistics-objects/waybill-{{mawb-prefix}}-{{mawb-number}}?embedded=true",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"logistics-objects",
+								"waybill-{{mawb-prefix}}-{{mawb-number}}"
+							],
+							"query": [
+								{
+									"key": "embedded",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -578,7 +663,6 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"",
 									"// Get token using Client Credentials grant type",
 									"pm.sendRequest({",
 									"    url: \"http://localhost:8989\" + \"/realms/neone/protocol/openid-connect/token\",",
@@ -603,6 +687,31 @@
 									"        pm.collectionVariables.set(\"BEARERTOKEN\", res.json().access_token);",
 									"    }",
 									"});",
+									"",
+									"// Get token using Client Credentials grant type",
+									"pm.sendRequest({",
+									"    url: \"http://localhost:8989\" + \"/realms/neone/protocol/openid-connect/token\",",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Accept\": \"application/json\",",
+									"        \"Content-Type\": \"application/x-www-form-urlencoded\"",
+									"    },",
+									"    body: {",
+									"        mode: \"urlencoded\",",
+									"        urlencoded: [",
+									"            { key: \"grant_type\", value: \"client_credentials\" },",
+									"            { key: \"client_id\", value: \"neone-client2\" },",
+									"            { key: \"client_secret\", value: \"lx7ThS5aYggdsMm42BP3wMrVqKm9WpNY\" }",
+									"        ]",
+									"    }",
+									"}, (err, res) => {",
+									"    if (err) {",
+									"        console.log(\"Token request failed:\", err);",
+									"    } else {",
+									"        // Set the access token",
+									"        pm.collectionVariables.set(\"CARRIERBEARERTOKEN\", res.json().access_token);",
+									"    }",
+									"});",
 									""
 								],
 								"type": "text/javascript",
@@ -616,7 +725,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{BEARERTOKEN}}",
+									"value": "{{CARRIERBEARERTOKEN}}",
 									"type": "string"
 								}
 							]
@@ -1048,7 +1157,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{BEARERTOKEN}}",
+									"value": "{{CARRIERBEARERTOKEN}}",
 									"type": "string"
 								}
 							]
