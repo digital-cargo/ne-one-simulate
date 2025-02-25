@@ -16,27 +16,25 @@ export function SwimlaneDiagram() {
 
 const animationDuration = 1000; // 1 second per node
 
-  useEffect(() => {
-    let currentIndex = 0;
+useEffect(() => {
+  let currentIndex = 0;
 
-    const interval = setInterval(() => {
-      if (currentIndex >= rawNodes.length) {
-        // Reset all nodes to grey and restart animation
-        setNodes(rawNodes.map((node) => ({ ...node, style: { backgroundColor: "#d1d5db", padding: 10, borderRadius: 8 } })));
-        currentIndex = 0;
-      } else {
-        // Turn one node green at a time
-        setNodes((prevNodes) =>
-          prevNodes.map((node, i) =>
-            i === currentIndex ? { ...node, style: { backgroundColor: "#86efac", padding: 10, borderRadius: 8 } } : node
-          )
-        );
-        currentIndex++;
-      }
-    }, animationDuration);
+  const interval = setInterval(() => {
+    if (currentIndex >= rawNodes.length) {
+      clearInterval(interval); // Stop the interval once all nodes are green
+    } else {
+      // Turn one node green at a time
+      setNodes((prevNodes) =>
+        prevNodes.map((node, i) =>
+          i === currentIndex ? { ...node, style: { backgroundColor: "#86efac", padding: 10, borderRadius: 8 } } : node
+        )
+      );
+      currentIndex++;
+    }
+  }, animationDuration);
 
-    return () => clearInterval(interval);
-  }, []);
+  return () => clearInterval(interval);
+}, []);
 
   return (
     <div style={{ height: '30vh', backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
