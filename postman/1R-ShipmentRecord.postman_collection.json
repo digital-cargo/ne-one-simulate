@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "f19fe99e-d4e9-4d75-92e8-eaa093559e0b",
+		"_postman_id": "02b58a5c-760f-45b3-a8a7-2903dc2b9966",
 		"name": "1R-ShipmentRecord",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "28113023"
+		"_exporter_id": "38369508",
+		"_collection_link": "https://one-record-1456.postman.co/workspace/f7492b3a-9cd2-47b9-8592-6ba740e9355a/collection/38369508-02b58a5c-760f-45b3-a8a7-2903dc2b9966?action=share&source=collection_link&creator=38369508"
 	},
 	"item": [
 		{
@@ -759,7 +760,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{BEARERTOKEN}}",
+									"value": "{{CARRIERBEARERTOKEN}}",
 									"type": "string"
 								}
 							]
@@ -974,7 +975,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{BEARERTOKEN}}",
+									"value": "{{CARRIERBEARERTOKEN}}",
 									"type": "string"
 								}
 							]
